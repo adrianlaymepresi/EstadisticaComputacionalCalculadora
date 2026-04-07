@@ -1,26 +1,88 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-verde-principal: #006241;
+  --color-verde-oscuro: #1e3932;
+  --color-verde-suave: #d4e9e2;
+  --color-verde-claro: #b8d8cc;
+  --color-cafe-principal: #6f4e37;
+  --color-cafe-suave: #b08968;
+  --color-blanco-principal: #ffffff;
+  --color-crema-suave: #f5f1ea;
+  --color-crema-media: #efe6d8;
+  --color-crema-profunda: #e6dac8;
+  --color-negro-principal: #111111;
+  --color-negro-suave: #2d2926;
+
+  --fondo-app: var(--color-crema-suave);
+  --superficie-principal: rgba(255, 255, 255, 0.92);
+  --superficie-secundaria: #ece4da;
+  --panel-navegacion: #f7f1e7;
+  --panel-resalte: #e4f0ea;
+  --borde-sutil: rgba(30, 57, 50, 0.14);
+  --texto-principal: var(--color-negro-principal);
+  --texto-secundario: #4d4944;
+  --acento-principal: var(--color-verde-principal);
+  --acento-oscuro: var(--color-verde-oscuro);
+  --acento-secundario: var(--color-cafe-principal);
+  --sombra-panel: 0 24px 60px rgba(30, 57, 50, 0.12);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-fondo-app: var(--fondo-app);
+  --color-superficie-principal: var(--superficie-principal);
+  --color-superficie-secundaria: var(--superficie-secundaria);
+  --color-panel-navegacion: var(--panel-navegacion);
+  --color-panel-resalte: var(--panel-resalte);
+  --color-borde-sutil: var(--borde-sutil);
+  --color-texto-principal: var(--texto-principal);
+  --color-texto-secundario: var(--texto-secundario);
+  --color-acento-principal: var(--acento-principal);
+  --color-acento-oscuro: var(--acento-oscuro);
+  --color-acento-secundario: var(--acento-secundario);
+  --color-verde-suave: var(--color-verde-suave);
+  --color-verde-claro: var(--color-verde-claro);
+  --color-crema-media: var(--color-crema-media);
+  --color-crema-profunda: var(--color-crema-profunda);
+  --font-sans: "Geist", "Geist Fallback", "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(0, 98, 65, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(212, 233, 226, 0.9), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(111, 78, 55, 0.12), transparent 24%),
+    linear-gradient(180deg, #fcfaf7 0%, var(--fondo-app) 46%, #ece3d4 100%);
+  color: var(--texto-principal);
+  font-family:
+    var(--font-geist-sans),
+    "Segoe UI",
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(0, 98, 65, 0.18);
+  color: var(--texto-principal);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }

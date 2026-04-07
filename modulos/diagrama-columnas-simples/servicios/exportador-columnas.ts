@@ -1,4 +1,13 @@
 import type { FilaColumnaSimple } from "@/modulos/diagrama-columnas-simples/tipos";
+import {
+  agregarCanvasComoImagen,
+  aplicarColorDeMuestra,
+  aplicarEstiloCeldaTabla,
+  aplicarEstiloEncabezado,
+  aplicarEstiloTitulo,
+  crearLibroExcel,
+  descargarLibroExcel,
+} from "@/modulos/comun/servicios/exportador-excel";
 
 interface ConfiguracionExportacionColumnas {
   datos: FilaColumnaSimple[];
@@ -19,48 +28,70 @@ export async function exportarExcelColumnasSimples(
   nombreArchivo: string,
   canvas?: HTMLCanvasElement,
 ): Promise<void> {
-  const XLSX = await import("xlsx");
-
   const total = calcularTotal(configuracion.datos);
-  const filas = configuracion.datos.map((fila) => [
-    fila.categoria,
-    fila.valor,
-    formatearPorcentaje(total > 0 ? (fila.valor / total) * 100 : 0),
-  ]);
+  const { libro } = await crearLibroExcel();
+  const hoja = libro.addWorksheet("Columnas simples");
+  const encabezados = [configuracion.nombreVariable, "fi", "pi", "Color", "Muestra"];
 
-  const hojaDatos = XLSX.utils.aoa_to_sheet([
-    [configuracion.tituloTabla],
-    [""],
-    [configuracion.nombreVariable, "fi", "pi"],
-    ...filas,
-    ["TOTAL", total, formatearPorcentaje(total > 0 ? 100 : 0)],
-  ]);
+  hoja.mergeCells(1, 1, 1, encabezados.length);
+  hoja.getCell("A1").value = configuracion.tituloTabla;
+  aplicarEstiloTitulo(hoja.getCell("A1"));
+  hoja.getRow(1).height = 26;
 
-  hojaDatos["!cols"] = [{ wch: 28 }, { wch: 12 }, { wch: 14 }];
-
-  ["A3", "B3", "C3"].forEach((celda) => {
-    if (!hojaDatos[celda]) {
-      return;
-    }
-
-    hojaDatos[celda].s = {
-      font: { bold: true, color: { rgb: "FFFFFF" } },
-      fill: { fgColor: { rgb: "1E3932" } },
-      alignment: { horizontal: "center", vertical: "center" },
-    };
+  encabezados.forEach((encabezado, indice) => {
+    const celda = hoja.getCell(3, indice + 1);
+    celda.value = encabezado;
+    aplicarEstiloEncabezado(celda);
   });
 
-  const libro = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(libro, hojaDatos, "Tabla");
+  configuracion.datos.forEach((fila, indice) => {
+    const numeroFila = 4 + indice;
+    const porcentaje = total > 0 ? (fila.valor / total) * 100 : 0;
+    const filaExcel = hoja.getRow(numeroFila);
 
-  if (canvas) {
-    const hojaDiagrama = XLSX.utils.aoa_to_sheet([
-      ["Diagrama de columnas simple"],
-      [""],
-      ["El archivo incluye la tabla estadistica y el diagrama exportado desde la web."],
-    ]);
-    XLSX.utils.book_append_sheet(libro, hojaDiagrama, "Diagrama");
+    filaExcel.getCell(1).value = fila.categoria;
+    filaExcel.getCell(2).value = fila.valor;
+    filaExcel.getCell(3).value = formatearPorcentaje(porcentaje);
+    filaExcel.getCell(4).value = fila.color || "";
+    filaExcel.getCell(5).value = "";
+
+    aplicarEstiloCeldaTabla(filaExcel.getCell(1));
+    aplicarEstiloCeldaTabla(filaExcel.getCell(2), true);
+    aplicarEstiloCeldaTabla(filaExcel.getCell(3), true);
+    aplicarEstiloCeldaTabla(filaExcel.getCell(4), true);
+    aplicarEstiloCeldaTabla(filaExcel.getCell(5), true);
+
+    if (fila.color) {
+      aplicarColorDeMuestra(filaExcel.getCell(5), fila.color);
+    }
+  });
+
+  const filaTotal = hoja.getRow(configuracion.datos.length + 4);
+  filaTotal.getCell(1).value = "TOTAL";
+  filaTotal.getCell(2).value = total;
+  filaTotal.getCell(3).value = formatearPorcentaje(total > 0 ? 100 : 0);
+  filaTotal.getCell(4).value = "";
+  filaTotal.getCell(5).value = "";
+  for (let indice = 1; indice <= 5; indice += 1) {
+    aplicarEstiloCeldaTabla(filaTotal.getCell(indice), indice !== 1);
+    filaTotal.getCell(indice).font = { bold: true };
   }
 
-  XLSX.writeFile(libro, `${nombreArchivo}.xlsx`);
+  hoja.columns = [
+    { width: 28 },
+    { width: 12 },
+    { width: 14 },
+    { width: 16 },
+    { width: 12 },
+  ];
+
+  if (canvas) {
+    const filaImagen = configuracion.datos.length + 7;
+    hoja.mergeCells(filaImagen, 1, filaImagen, encabezados.length);
+    hoja.getCell(filaImagen, 1).value = "Vista previa del diagrama";
+    aplicarEstiloTitulo(hoja.getCell(filaImagen, 1));
+    agregarCanvasComoImagen(libro, hoja, canvas, filaImagen + 1, encabezados.length);
+  }
+
+  await descargarLibroExcel(libro, nombreArchivo);
 }

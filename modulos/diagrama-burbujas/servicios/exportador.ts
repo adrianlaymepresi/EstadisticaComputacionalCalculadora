@@ -1,4 +1,13 @@
 import type { ConfiguracionDiagrama } from "@/modulos/diagrama-burbujas/tipos";
+import {
+  agregarCanvasComoImagen,
+  aplicarColorDeMuestra,
+  aplicarEstiloCeldaTabla,
+  aplicarEstiloEncabezado,
+  aplicarEstiloTitulo,
+  crearLibroExcel,
+  descargarLibroExcel,
+} from "@/modulos/comun/servicios/exportador-excel";
 
 export const exportarComoImagen = async (
   canvas: HTMLCanvasElement,
@@ -47,58 +56,68 @@ export const exportarComoExcel = async (
   nombreArchivo: string,
   canvas?: HTMLCanvasElement,
 ): Promise<void> => {
-  const XLSX = await import("xlsx");
-
+  const { libro } = await crearLibroExcel();
+  const hoja = libro.addWorksheet("Diagrama");
+  const incluirColor = configuracion.datos.some((fila) => Boolean(fila.color));
   const encabezados = [
     configuracion.configuracionColumnas.nombreX,
     configuracion.configuracionColumnas.nombreY,
     configuracion.configuracionColumnas.nombreTamanio,
+    ...(incluirColor
+      ? [
+          configuracion.configuracionColumnas.nombreColor || "Color aplicado",
+          "Muestra",
+        ]
+      : []),
   ];
 
-  if (configuracion.configuracionColumnas.nombreColor) {
-    encabezados.push(configuracion.configuracionColumnas.nombreColor);
-  }
+  hoja.mergeCells(1, 1, 1, encabezados.length);
+  hoja.getCell("A1").value = "Diagrama de Burbujas";
+  aplicarEstiloTitulo(hoja.getCell("A1"));
+  hoja.getRow(1).height = 26;
 
-  const filas = configuracion.datos.map((fila) => {
-    const filaTabla: Array<string | number> = [fila.x, fila.y, fila.tamanio];
-    if (fila.color) {
-      filaTabla.push(fila.color);
-    }
-    return filaTabla;
+  encabezados.forEach((encabezado, indice) => {
+    const celda = hoja.getCell(3, indice + 1);
+    celda.value = encabezado;
+    aplicarEstiloEncabezado(celda);
   });
 
-  const datosHoja = [encabezados, ...filas];
-  const hojaDatos = XLSX.utils.aoa_to_sheet(datosHoja);
-  const rangoColumnas = XLSX.utils.decode_range(hojaDatos["!ref"] || "A1");
+  configuracion.datos.forEach((fila, indice) => {
+    const numeroFila = 4 + indice;
+    const filaExcel = hoja.getRow(numeroFila);
+    filaExcel.getCell(1).value = fila.x;
+    filaExcel.getCell(2).value = fila.y;
+    filaExcel.getCell(3).value = fila.tamanio;
 
-  for (let columna = rangoColumnas.s.c; columna <= rangoColumnas.e.c; columna += 1) {
-    const direccion = XLSX.utils.encode_col(columna) + "1";
-    if (!hojaDatos[direccion]) {
-      continue;
+    aplicarEstiloCeldaTabla(filaExcel.getCell(1), true);
+    aplicarEstiloCeldaTabla(filaExcel.getCell(2), true);
+    aplicarEstiloCeldaTabla(filaExcel.getCell(3), true);
+
+    if (incluirColor) {
+      filaExcel.getCell(4).value = fila.color || "";
+      filaExcel.getCell(5).value = "";
+      aplicarEstiloCeldaTabla(filaExcel.getCell(4), true);
+      aplicarEstiloCeldaTabla(filaExcel.getCell(5), true);
+
+      if (fila.color) {
+        aplicarColorDeMuestra(filaExcel.getCell(5), fila.color);
+      }
     }
+  });
 
-    hojaDatos[direccion].s = {
-      font: { bold: true, color: { rgb: "FFFFFF" } },
-      fill: { fgColor: { rgb: "8B5CF6" } },
-      alignment: { horizontal: "center", vertical: "center" },
-    };
-  }
-
-  hojaDatos["!cols"] = encabezados.map(() => ({ wch: 15 }));
-
-  const libro = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(libro, hojaDatos, "Datos");
+  hoja.columns = encabezados.map((_, indice) => ({
+    width: indice === 0 ? 18 : 16,
+  }));
 
   if (canvas) {
-    const hojaImagen = XLSX.utils.aoa_to_sheet([
-      ["Diagrama de Burbujas"],
-      [""],
-      ["Ver imagen adjunta en formato PNG"],
-    ]);
-    XLSX.utils.book_append_sheet(libro, hojaImagen, "Diagrama");
+    const filaImagen = configuracion.datos.length + 7;
+    hoja.mergeCells(filaImagen, 1, filaImagen, encabezados.length);
+    hoja.getCell(filaImagen, 1).value = "Vista previa del diagrama";
+    aplicarEstiloTitulo(hoja.getCell(filaImagen, 1));
+    agregarCanvasComoImagen(libro, hoja, canvas, filaImagen + 1, encabezados.length);
   }
 
-  XLSX.writeFile(libro, `${nombreArchivo}.xlsx`);
+  await descargarLibroExcel(libro, nombreArchivo);
 };
 
 export const normalizarNombreArchivo = (nombre: string): string => {

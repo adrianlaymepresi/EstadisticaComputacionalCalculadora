@@ -3,7 +3,8 @@ export type IdentificadorHerramienta =
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
-  | "diagrama-barras";
+  | "diagrama-barras"
+  | "diagrama-bastones";
 
 export interface TarjetaUnidad {
   id: string;
@@ -122,13 +123,21 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-bastones",
         titulo: "DIAGRAMA DE BASTONES",
-        resumen: "Card reservada para la futura implementacion del diagrama de bastones.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para ingresar valores discretos con su fi, generar la tabla xi-fi-pi y construir el diagrama de bastones.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Este lugar queda separado para montar luego la herramienta de bastones sin afectar otras cards.",
-        nota: "La idea es seguir integrando cada herramienta de forma aislada y controlada.",
-        estado: "proximamente",
-        palabrasClave: ["bastones", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama de bastones con ingreso de valores, tabla estadistica, grafico, personalizacion y exportacion.",
+        nota: "Lista para trabajar con pocos valores cuantitativos y sus frecuencias dentro del mismo flujo.",
+        estado: "disponible",
+        palabrasClave: [
+          "bastones",
+          "diagrama de bastones",
+          "xi",
+          "fi",
+          "pi",
+        ],
+        herramientaId: "diagrama-bastones",
       },
       {
         id: "diagrama-pictogramas",

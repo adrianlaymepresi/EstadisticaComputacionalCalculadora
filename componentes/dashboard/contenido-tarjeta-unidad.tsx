@@ -1,4 +1,5 @@
 import type { TarjetaUnidad } from "@/datos/dashboard";
+import { ModuloDiagramaBastones } from "@/modulos/diagrama-bastones/componentes/modulo-diagrama-bastones";
 import { ModuloDiagramaBarras } from "@/modulos/diagrama-barras/componentes/modulo-diagrama-barras";
 import { ModuloDiagramaColumnasCompuestas } from "@/modulos/diagrama-columnas-compuestas/componentes/modulo-diagrama-columnas-compuestas";
 import { ModuloDiagramaColumnasSimples } from "@/modulos/diagrama-columnas-simples/componentes/modulo-diagrama-columnas-simples";
@@ -71,6 +72,8 @@ export function ContenidoTarjetaUnidad({
         <ModuloDiagramaColumnasCompuestas key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-barras" ? (
         <ModuloDiagramaBarras key={tarjeta.id} />
+      ) : tarjeta.herramientaId === "diagrama-bastones" ? (
+        <ModuloDiagramaBastones key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-burbujas" ? (
         <ModuloDiagramaBurbujas key={tarjeta.id} />
       ) : (

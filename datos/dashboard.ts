@@ -1,5 +1,7 @@
 export type EstadoTarjeta = "disponible" | "proximamente";
-export type IdentificadorHerramienta = "diagrama-burbujas";
+export type IdentificadorHerramienta =
+  | "diagrama-burbujas"
+  | "diagrama-columnas-simples";
 
 export interface TarjetaUnidad {
   id: string;
@@ -63,13 +65,21 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-columnas-simples",
         titulo: "DIAGRAMA COLUMNAS SIMPLES",
-        resumen: "Card reservada para la futura implementacion de columnas simples.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para cargar categorias y valores, generar la tabla estadistica y construir el diagrama de columnas simple.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Este espacio quedara listo para recibir la herramienta completa del diagrama de columnas simples.",
-        nota: "Solo la card de burbujas esta activa en esta etapa.",
-        estado: "proximamente",
-        palabrasClave: ["columnas simples", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama de columnas simples con ingreso de datos, tabla resumen, grafico, personalizacion y exportacion.",
+        nota: "Lista para trabajar con nombres y valores, igual que el flujo de burbujas adaptado a este diagrama.",
+        estado: "disponible",
+        palabrasClave: [
+          "columnas simples",
+          "diagrama de columnas simples",
+          "categorias",
+          "fi",
+          "pi",
+        ],
+        herramientaId: "diagrama-columnas-simples",
       },
       {
         id: "diagrama-columnas-compuestas",

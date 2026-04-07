@@ -1,4 +1,5 @@
 import type { TarjetaUnidad } from "@/datos/dashboard";
+import { ModuloDiagramaColumnasSimples } from "@/modulos/diagrama-columnas-simples/componentes/modulo-diagrama-columnas-simples";
 import { ModuloDiagramaBurbujas } from "@/modulos/diagrama-burbujas/componentes/modulo-diagrama-burbujas";
 
 interface ContenidoTarjetaUnidadProps {
@@ -62,7 +63,9 @@ export function ContenidoTarjetaUnidad({
         {unidadTitulo}
       </button>
 
-      {tarjeta.herramientaId === "diagrama-burbujas" ? (
+      {tarjeta.herramientaId === "diagrama-columnas-simples" ? (
+        <ModuloDiagramaColumnasSimples key={tarjeta.id} />
+      ) : tarjeta.herramientaId === "diagrama-burbujas" ? (
         <ModuloDiagramaBurbujas key={tarjeta.id} />
       ) : (
         <VistaPlaceholderTarjeta unidadTitulo={unidadTitulo} tarjeta={tarjeta} />

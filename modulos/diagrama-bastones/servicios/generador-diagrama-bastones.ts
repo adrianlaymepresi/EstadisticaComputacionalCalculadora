@@ -160,9 +160,8 @@ export function calcularBastonesDiagrama(
   const altoUtil = altoCanvas - margenSuperior - margenInferior;
   const escalaX = calcularEscalaX(datos, opciones.ejeXManual);
   const escalaY = calcularEscalaY(datos, opciones.ejeYManual);
-  const colores = generarColoresBastonesDefault(datos.length);
 
-  return datos.map((dato, indice) => {
+  return datos.map((dato) => {
     const proporcionX =
       (dato.valor - escalaX.minimo) / (escalaX.maximo - escalaX.minimo || 1);
     const proporcionY =
@@ -175,7 +174,7 @@ export function calcularBastonesDiagrama(
       radio: 11,
       valor: dato.valor,
       frecuencia: dato.frecuencia,
-      color: dato.color || colores[indice],
+      color: dato.color || "#A13A37",
     };
   });
 }
@@ -276,26 +275,19 @@ export function dibujarDiagramaBastones(
 
   bastones.forEach((baston, indice) => {
     const seleccionado = opciones.indiceSeleccionado === indice;
+    const colorBaston = seleccionado ? "#8E2F2C" : baston.color;
     const colorBorde = seleccionado
-      ? "#1E3932"
+      ? "#8E2F2C"
       : mezclarColor(baston.color, -45);
+    const anchoBaston = seleccionado ? 24 : 20;
+    const xInicio = baston.xCentro - anchoBaston / 2;
+    const alturaBaston = Math.max(2, baston.yBase - baston.yTop);
 
-    contexto.strokeStyle = baston.color;
-    contexto.lineWidth = seleccionado ? 10 : 8;
-    contexto.lineCap = "round";
-    contexto.beginPath();
-    contexto.moveTo(baston.xCentro, baston.yBase);
-    contexto.lineTo(baston.xCentro, baston.yTop);
-    contexto.stroke();
-
-    contexto.fillStyle = baston.color;
-    contexto.beginPath();
-    contexto.arc(baston.xCentro, baston.yTop, baston.radio, 0, Math.PI * 2);
-    contexto.fill();
-
+    contexto.fillStyle = colorBaston;
+    contexto.fillRect(xInicio, baston.yTop, anchoBaston, alturaBaston);
     contexto.strokeStyle = colorBorde;
-    contexto.lineWidth = seleccionado ? 4 : 2;
-    contexto.stroke();
+    contexto.lineWidth = seleccionado ? 3 : 2;
+    contexto.strokeRect(xInicio, baston.yTop, anchoBaston, alturaBaston);
 
     contexto.fillStyle = "#111111";
     contexto.font = "bold 18px sans-serif";

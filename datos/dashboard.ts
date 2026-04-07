@@ -1,6 +1,7 @@
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
   | "distribucion-arbitraria"
+  | "metodo-sturges"
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
@@ -93,13 +94,14 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "metodo-sturges",
         titulo: "METODO DE STURGES",
         resumen:
-          "Card preparada para aplicar la formula de Sturges sobre la misma base de datos y tabla estadistica.",
-        etiqueta: "Proximamente",
+          "Herramienta funcional para calcular k con la regla de Sturges, construir la tabla estadistica agrupada y recalcular sus parametros.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Aqui integraremos el metodo de Sturges reutilizando la captura de datos, los pasos y la construccion final de la tabla.",
-        nota: "La base quedara enlazada con el mismo flujo de recalculo y exportacion.",
-        estado: "proximamente",
+          "Esta card abre el modulo completo del metodo de Sturges con captura de datos, redondeo inicial de k, pasos detallados, tabla final, redistribucion del excedente, recalculo y exportacion.",
+        nota: "Lista para trabajar sobre la misma base de tablas agrupadas, cambiando solo el origen de k.",
+        estado: "disponible",
         palabrasClave: ["sturges", "tabla estadistica", "k", "intervalos"],
+        herramientaId: "metodo-sturges",
       },
       {
         id: "metodo-maximo-entero",

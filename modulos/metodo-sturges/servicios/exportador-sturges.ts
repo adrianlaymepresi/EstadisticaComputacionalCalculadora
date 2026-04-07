@@ -1,4 +1,4 @@
-import type { ResultadoDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/tipos";
+import type { ConfiguracionExportacionTablaAgrupada } from "@/modulos/tablas-estadisticas/componentes/modulo-tabla-estadistica-agrupada";
 import {
   aplicarEstiloCeldaTabla,
   aplicarEstiloEncabezado,
@@ -7,15 +7,8 @@ import {
   descargarLibroExcel,
 } from "@/modulos/comun/servicios/exportador-excel";
 
-interface ConfiguracionExportacionDistribucionArbitraria {
-  numeroTabla: string;
-  tituloDescriptivo: string;
-  datosOriginales: string[][];
-  resultado: ResultadoDistribucionArbitraria;
-}
-
-export async function exportarExcelDistribucionArbitraria(
-  configuracion: ConfiguracionExportacionDistribucionArbitraria,
+export async function exportarExcelSturges(
+  configuracion: ConfiguracionExportacionTablaAgrupada,
   nombreArchivo: string,
 ): Promise<void> {
   const { libro } = await crearLibroExcel();
@@ -31,13 +24,25 @@ export async function exportarExcelDistribucionArbitraria(
   aplicarEstiloTitulo(hojaResumen.getCell("A2"));
 
   const filasResumen: Array<[string, string | number | boolean]> = [
+    ["Metodo", "Sturges"],
     ["Numero de datos (n)", configuracion.resultado.n],
+    [
+      "k exacto = 1 + 3,3 * log10(n)",
+      configuracion.resumenMetodo.kExacto ?? "",
+    ],
+    [
+      "Redondeo inicial",
+      configuracion.resumenMetodo.direccionRedondeo === "arriba"
+        ? "Hacia arriba"
+        : "Hacia abajo",
+    ],
+    ["k aplicado", configuracion.resultado.k],
+    ["k fue manual", configuracion.resumenMetodo.kFueManual],
     ["Dato minimo (d)", configuracion.resultado.d],
     ["Dato maximo (D)", configuracion.resultado.D],
     ["Precision detectada", configuracion.resultado.precision],
     ["c", configuracion.resultado.c],
     ["Longitud de alcance (la)", configuracion.resultado.longitudAlcance],
-    ["k", configuracion.resultado.k],
     ["t bruto", configuracion.resultado.tBruto],
     ["t ajustado", configuracion.resultado.tAjustado],
     ["Cobertura t*k", configuracion.resultado.cobertura],
@@ -94,13 +99,9 @@ export async function exportarExcelDistribucionArbitraria(
   });
 
   const filaTotal = filaTabla + configuracion.resultado.intervalos.length + 1;
-  const totalHi = configuracion.resultado.intervalos.reduce(
-    (acumulado, intervalo) => acumulado + intervalo.hi,
-    0,
-  );
   hojaResumen.getCell(filaTotal, 1).value = "TOTAL";
   hojaResumen.getCell(filaTotal, 3).value = configuracion.resultado.n;
-  hojaResumen.getCell(filaTotal, 4).value = totalHi.toFixed(4).replace(".", ",");
+  hojaResumen.getCell(filaTotal, 4).value = "1,0000";
   hojaResumen.getCell(filaTotal, 5).value = "100,00%";
   hojaResumen.getCell(filaTotal, 6).value = configuracion.resultado.n;
   hojaResumen.getCell(filaTotal, 7).value = "1,0000";
@@ -108,13 +109,11 @@ export async function exportarExcelDistribucionArbitraria(
 
   for (let columna = 1; columna <= 8; columna += 1) {
     aplicarEstiloCeldaTabla(hojaResumen.getCell(filaTotal, columna), true);
-    hojaResumen.getCell(filaTotal, columna).font = {
-      bold: true,
-    };
+    hojaResumen.getCell(filaTotal, columna).font = { bold: true };
   }
 
   hojaResumen.columns = [
-    { width: 24 },
+    { width: 28 },
     { width: 18 },
     { width: 10 },
     { width: 12 },
@@ -124,11 +123,10 @@ export async function exportarExcelDistribucionArbitraria(
     { width: 12 },
   ];
 
-  const matriz = configuracion.datosOriginales;
   hojaDatos.getCell("A1").value = "Datos originales";
   aplicarEstiloTitulo(hojaDatos.getCell("A1"));
 
-  matriz.forEach((fila, indiceFila) => {
+  configuracion.datosOriginales.forEach((fila, indiceFila) => {
     fila.forEach((valor, indiceColumna) => {
       const celda = hojaDatos.getCell(indiceFila + 3, indiceColumna + 1);
       celda.value = valor;

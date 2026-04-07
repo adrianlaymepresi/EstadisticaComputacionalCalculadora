@@ -101,17 +101,33 @@ export function calcularDistribucionArbitraria(
 
   const correccionUnidades = coberturaUnidades - longitudAlcanceUnidades;
   const mitadInferior = Math.floor(correccionUnidades / 2);
-  const mitadSuperior = Math.ceil(correccionUnidades / 2);
+  const ajusteInferiorMaximoUnidades = noPermitirNegativos
+    ? Math.min(correccionUnidades, Math.max(0, dUnidades))
+    : correccionUnidades;
+  const ajusteInferiorMinimoUnidades = 0;
+  const ajusteInferiorPredeterminadoUnidades = Math.min(
+    ajusteInferiorMaximoUnidades,
+    mitadInferior,
+  );
+  const ajusteSuperiorPredeterminadoUnidades =
+    correccionUnidades - ajusteInferiorPredeterminadoUnidades;
 
-  let ajusteInferiorUnidades = mitadInferior;
-  let ajusteSuperiorUnidades = mitadSuperior;
-
-  if (noPermitirNegativos && dUnidades - ajusteInferiorUnidades < 0) {
-    const ajustePermitido = Math.max(0, dUnidades);
-    const diferencia = ajusteInferiorUnidades - ajustePermitido;
-    ajusteInferiorUnidades = ajustePermitido;
-    ajusteSuperiorUnidades += diferencia;
+  let ajusteInferiorUnidades = ajusteInferiorPredeterminadoUnidades;
+  if (
+    configuracion.ajusteInferiorPreferido !== null &&
+    configuracion.ajusteInferiorPreferido !== undefined
+  ) {
+    const ajustePreferidoUnidades = convertirAUnidades(
+      configuracion.ajusteInferiorPreferido,
+      escala,
+    );
+    ajusteInferiorUnidades = Math.min(
+      ajusteInferiorMaximoUnidades,
+      Math.max(ajusteInferiorMinimoUnidades, ajustePreferidoUnidades),
+    );
   }
+
+  const ajusteSuperiorUnidades = correccionUnidades - ajusteInferiorUnidades;
 
   const minimoCorregidoUnidades = dUnidades - ajusteInferiorUnidades;
   const maximoCorregidoUnidades = DUnidades + ajusteSuperiorUnidades;
@@ -185,6 +201,26 @@ export function calcularDistribucionArbitraria(
     ),
     ajusteSuperior: convertirDesdeUnidades(
       ajusteSuperiorUnidades,
+      escala,
+      precision,
+    ),
+    ajusteInferiorPredeterminado: convertirDesdeUnidades(
+      ajusteInferiorPredeterminadoUnidades,
+      escala,
+      precision,
+    ),
+    ajusteSuperiorPredeterminado: convertirDesdeUnidades(
+      ajusteSuperiorPredeterminadoUnidades,
+      escala,
+      precision,
+    ),
+    ajusteInferiorMinimo: convertirDesdeUnidades(
+      ajusteInferiorMinimoUnidades,
+      escala,
+      precision,
+    ),
+    ajusteInferiorMaximo: convertirDesdeUnidades(
+      ajusteInferiorMaximoUnidades,
       escala,
       precision,
     ),

@@ -4,6 +4,7 @@ export interface ConfiguracionDistribucionArbitraria {
   k: number;
   tManual?: number | null;
   noPermitirNegativos: boolean;
+  ajusteInferiorPreferido?: number | null;
 }
 
 export interface IntervaloDistribucionArbitraria {
@@ -37,6 +38,10 @@ export interface ResultadoDistribucionArbitraria {
   unidadesCorreccion: number;
   ajusteInferior: number;
   ajusteSuperior: number;
+  ajusteInferiorPredeterminado: number;
+  ajusteSuperiorPredeterminado: number;
+  ajusteInferiorMinimo: number;
+  ajusteInferiorMaximo: number;
   minimoCorregido: number;
   maximoCorregido: number;
   ultimoLimiteSuperior: number;

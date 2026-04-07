@@ -1,5 +1,6 @@
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
+  | "distribucion-arbitraria"
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
@@ -50,6 +51,87 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         nota: "La estructura ya queda lista para ir creciendo paso a paso.",
         estado: "proximamente",
         palabrasClave: ["bases", "conceptos", "unidad 1", "inicio"],
+      },
+    ],
+  },
+  {
+    id: "unidad-1-0",
+    titulo: "Unidad 1,0",
+    subtitulo: "Tablas estadisticas",
+    descripcion:
+      "Bloque preparado para construir tablas estadisticas paso a paso, con metodos agrupados y una base reutilizable para recalcular y exportar resultados.",
+    palabrasClave: [
+      "unidad 1,0",
+      "tablas estadisticas",
+      "distribucion arbitraria",
+      "sturges",
+      "maximo entero",
+      "simple inspeccion",
+    ],
+    tarjetas: [
+      {
+        id: "distribucion-arbitraria",
+        titulo: "DISTRIBUCION ARBITRARIA",
+        resumen:
+          "Herramienta funcional para construir tablas estadisticas agrupadas usando k elegido por el investigador y recalculo manual de parametros.",
+        etiqueta: "Disponible ahora",
+        descripcionTrabajo:
+          "Esta card abre el modulo completo de distribucion arbitraria con captura de datos en tabla, pasos detallados, tabla final, recalculo y exportacion.",
+        nota: "Lista para servir como modelo base de las demas tecnicas de tablas estadisticas.",
+        estado: "disponible",
+        palabrasClave: [
+          "distribucion arbitraria",
+          "tabla estadistica",
+          "intervalos",
+          "fi",
+          "hi",
+          "pi",
+        ],
+        herramientaId: "distribucion-arbitraria",
+      },
+      {
+        id: "metodo-sturges",
+        titulo: "METODO DE STURGES",
+        resumen:
+          "Card preparada para aplicar la formula de Sturges sobre la misma base de datos y tabla estadistica.",
+        etiqueta: "Proximamente",
+        descripcionTrabajo:
+          "Aqui integraremos el metodo de Sturges reutilizando la captura de datos, los pasos y la construccion final de la tabla.",
+        nota: "La base quedara enlazada con el mismo flujo de recalculo y exportacion.",
+        estado: "proximamente",
+        palabrasClave: ["sturges", "tabla estadistica", "k", "intervalos"],
+      },
+      {
+        id: "metodo-maximo-entero",
+        titulo: "METODO DEL MAXIMO ENTERO",
+        resumen:
+          "Card preparada para resolver tablas estadisticas usando el criterio del maximo entero.",
+        etiqueta: "Proximamente",
+        descripcionTrabajo:
+          "Aqui integraremos el metodo del maximo entero usando la misma estructura modular de captura, calculo y exportacion.",
+        nota: "Quedara lista para aprovechar casi toda la base del metodo arbitrario.",
+        estado: "proximamente",
+        palabrasClave: [
+          "maximo entero",
+          "tabla estadistica",
+          "agrupacion",
+        ],
+      },
+      {
+        id: "metodo-simple-inspeccion",
+        titulo: "METODO SIMPLE INSPECCION",
+        resumen:
+          "Card preparada para construir tablas estadisticas por simple inspeccion con el mismo sistema de trabajo.",
+        etiqueta: "Proximamente",
+        descripcionTrabajo:
+          "Aqui integraremos el metodo de simple inspeccion sobre la misma experiencia de captura, tabla final y exportacion.",
+        nota: "La estructura ya queda lista para conectarla despues sin desorden.",
+        estado: "proximamente",
+        palabrasClave: [
+          "simple inspeccion",
+          "tabla estadistica",
+          "inspeccion",
+        ],
       },
     ],
   },

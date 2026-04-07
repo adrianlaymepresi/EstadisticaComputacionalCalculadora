@@ -1,4 +1,5 @@
 import type { TarjetaUnidad } from "@/datos/dashboard";
+import { ModuloDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/componentes/modulo-distribucion-arbitraria";
 import { ModuloDiagramaBastones } from "@/modulos/diagrama-bastones/componentes/modulo-diagrama-bastones";
 import { ModuloDiagramaBarras } from "@/modulos/diagrama-barras/componentes/modulo-diagrama-barras";
 import { ModuloDiagramaColumnasCompuestas } from "@/modulos/diagrama-columnas-compuestas/componentes/modulo-diagrama-columnas-compuestas";
@@ -71,6 +72,8 @@ export function ContenidoTarjetaUnidad({
 
       {tarjeta.herramientaId === "diagrama-columnas-simples" ? (
         <ModuloDiagramaColumnasSimples key={tarjeta.id} />
+      ) : tarjeta.herramientaId === "distribucion-arbitraria" ? (
+        <ModuloDistribucionArbitraria key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-columnas-compuestas" ? (
         <ModuloDiagramaColumnasCompuestas key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-barras" ? (

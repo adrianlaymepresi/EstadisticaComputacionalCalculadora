@@ -4,6 +4,7 @@ import { ModuloDiagramaBarras } from "@/modulos/diagrama-barras/componentes/modu
 import { ModuloDiagramaColumnasCompuestas } from "@/modulos/diagrama-columnas-compuestas/componentes/modulo-diagrama-columnas-compuestas";
 import { ModuloDiagramaColumnasSimples } from "@/modulos/diagrama-columnas-simples/componentes/modulo-diagrama-columnas-simples";
 import { ModuloDiagramaDispersion } from "@/modulos/diagrama-dispersion/componentes/modulo-diagrama-dispersion";
+import { ModuloDiagramaLineal } from "@/modulos/diagrama-lineal/componentes/modulo-diagrama-lineal";
 import { ModuloDiagramaPictogramas } from "@/modulos/diagrama-pictogramas/componentes/modulo-diagrama-pictogramas";
 import { ModuloDiagramaBurbujas } from "@/modulos/diagrama-burbujas/componentes/modulo-diagrama-burbujas";
 
@@ -78,6 +79,8 @@ export function ContenidoTarjetaUnidad({
         <ModuloDiagramaBastones key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-dispersion" ? (
         <ModuloDiagramaDispersion key={tarjeta.id} />
+      ) : tarjeta.herramientaId === "diagrama-lineal" ? (
+        <ModuloDiagramaLineal key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-pictogramas" ? (
         <ModuloDiagramaPictogramas key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-burbujas" ? (

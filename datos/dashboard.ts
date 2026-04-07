@@ -6,7 +6,8 @@ export type IdentificadorHerramienta =
   | "diagrama-barras"
   | "diagrama-bastones"
   | "diagrama-pictogramas"
-  | "diagrama-dispersion";
+  | "diagrama-dispersion"
+  | "diagrama-lineal";
 
 export interface TarjetaUnidad {
   id: string;
@@ -200,13 +201,21 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-lineal",
         titulo: "DIAGRAMA LINEAL",
-        resumen: "Card reservada para la futura implementacion del diagrama lineal.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para trabajar con una variable ordinal en el eje X y una variable cuantitativa en el eje Y mediante una linea de tendencia simple.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Aqui podremos montar mas adelante la herramienta del diagrama lineal con la misma base reutilizable.",
-        nota: "La estructura quedo pensada para sumar muchas funcionalidades sin desorden.",
-        estado: "proximamente",
-        palabrasClave: ["lineal", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama lineal con ingreso de datos, tabla horizontal, grafico, personalizacion y exportacion.",
+        nota: "Lista para representar tendencias simples con periodos ordinales y valores cuantitativos dentro del mismo flujo de trabajo.",
+        estado: "disponible",
+        palabrasClave: [
+          "lineal",
+          "diagrama lineal",
+          "tendencia simple",
+          "periodo",
+          "variable ordinal",
+        ],
+        herramientaId: "diagrama-lineal",
       },
     ],
   },

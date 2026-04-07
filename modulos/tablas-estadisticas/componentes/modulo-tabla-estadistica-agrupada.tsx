@@ -4,7 +4,10 @@ import { useState } from "react";
 import { normalizarNombreArchivo } from "@/modulos/diagrama-burbujas/servicios/exportador";
 import { parsearDatosTabla } from "@/modulos/diagrama-burbujas/utilidades/validaciones";
 import { calcularDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/servicios/calculos-distribucion-arbitraria";
-import type { ResultadoDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/tipos";
+import type {
+  DireccionRedondeo,
+  ResultadoDistribucionArbitraria,
+} from "@/modulos/distribucion-arbitraria/tipos";
 
 const MINIMO_DATOS = 14;
 const FILAS_INICIALES = 3;
@@ -14,7 +17,7 @@ const MAX_COLUMNAS_CAPTURA = 20;
 const MAXIMO_DATOS_STURGES = 16999;
 
 type MetodoTablaAgrupada = "arbitraria" | "sturges";
-type DireccionRedondeoSturges = "arriba" | "abajo";
+type DireccionRedondeoSturges = DireccionRedondeo;
 
 interface MensajeEstado {
   tipo: "error" | "exito" | "info";
@@ -27,6 +30,8 @@ export interface ResumenMetodoTablaAgrupada {
   kFueManual: boolean;
   kExacto?: number | null;
   direccionRedondeo?: DireccionRedondeoSturges | null;
+  tExacto?: number | null;
+  direccionRedondeoT: DireccionRedondeo;
 }
 
 export interface ConfiguracionExportacionTablaAgrupada {
@@ -327,7 +332,8 @@ export function ModuloTablaEstadisticaAgrupada({
   const [direccionRedondeoSturges, setDireccionRedondeoSturges] =
     useState<DireccionRedondeoSturges>("arriba");
   const [kManualRecalculo, setKManualRecalculo] = useState("");
-  const [tManual, setTManual] = useState("");
+  const [direccionRedondeoT, setDireccionRedondeoT] =
+    useState<DireccionRedondeo>("arriba");
   const [noPermitirNegativos, setNoPermitirNegativos] = useState(true);
   const [ajusteInferiorPersonalizado, setAjusteInferiorPersonalizado] =
     useState("");
@@ -482,6 +488,8 @@ export function ModuloTablaEstadisticaAgrupada({
           ? null
           : calcularKSturges(cantidadDatos, direccionRedondeoSturges).kExacto,
         direccionRedondeo: esMetodoArbitrario ? null : direccionRedondeoSturges,
+        tExacto: null,
+        direccionRedondeoT,
       };
     }
 
@@ -498,6 +506,8 @@ export function ModuloTablaEstadisticaAgrupada({
         kFueManual: false,
         kExacto: null,
         direccionRedondeo: null,
+        tExacto: null,
+        direccionRedondeoT,
       };
     }
 
@@ -512,6 +522,8 @@ export function ModuloTablaEstadisticaAgrupada({
       kFueManual: false,
       kExacto,
       direccionRedondeo: direccionRedondeoSturges,
+      tExacto: null,
+      direccionRedondeoT,
     };
   };
 
@@ -522,7 +534,6 @@ export function ModuloTablaEstadisticaAgrupada({
       valor: parsearNumero(celda),
     }));
     const celdasInvalidas = datosParseados.filter((dato) => dato.valor === null);
-    const valorTManual = tManual.trim() ? parsearNumero(tManual) : null;
 
     if (celdasInvalidas.length > 0) {
       setMensajeEstado({
@@ -550,14 +561,6 @@ export function ModuloTablaEstadisticaAgrupada({
       return;
     }
 
-    if (valorTManual !== null && (valorTManual <= 0 || !Number.isFinite(valorTManual))) {
-      setMensajeEstado({
-        tipo: "error",
-        texto: "El valor manual de t debe ser un numero positivo.",
-      });
-      return;
-    }
-
     try {
       const precision = detectarPrecision(celdasNoVacias);
       const resumenK = resolverK(datosParseados.length, usarKManual);
@@ -580,7 +583,7 @@ export function ModuloTablaEstadisticaAgrupada({
         datos: datosParseados.map((dato) => dato.valor as number),
         precision,
         k: resumenK.kUsado,
-        tManual: valorTManual,
+        direccionRedondeoT,
         noPermitirNegativos,
         ajusteInferiorPreferido:
           usarRedistribucionPersonalizada && ajusteInferiorPreferido !== null
@@ -589,7 +592,11 @@ export function ModuloTablaEstadisticaAgrupada({
       });
 
       setResultado(resultadoCalculado);
-      setResumenMetodo(resumenK);
+      setResumenMetodo({
+        ...resumenK,
+        tExacto: resultadoCalculado.tBruto,
+        direccionRedondeoT,
+      });
       setAjusteInferiorPersonalizado(
         formatearNumeroEntrada(
           usarRedistribucionPersonalizada
@@ -871,11 +878,16 @@ export function ModuloTablaEstadisticaAgrupada({
                 ]}
               />
             )}
-            <CampoFormulario
-              etiqueta="Tamaño de clase manual (opcional)"
-              valor={tManual}
-              onChange={setTManual}
-              placeholder="Dejalo vacio para calcularlo automaticamente"
+            <CampoSelector
+              etiqueta="Redondeo de t"
+              valor={direccionRedondeoT}
+              onChange={(valor) =>
+                setDireccionRedondeoT(valor as DireccionRedondeo)
+              }
+              opciones={[
+                { etiqueta: "Tomar maximo", valor: "arriba" },
+                { etiqueta: "Tomar minimo", valor: "abajo" },
+              ]}
             />
           </div>
 
@@ -1078,7 +1090,7 @@ export function ModuloTablaEstadisticaAgrupada({
                 )}
               />
               <TarjetaDato
-                titulo={resultado.tManualAplicado ? "t manual usado" : "t ajustado"}
+                titulo={`t ajustado (${resultado.direccionRedondeoT === "arriba" ? "maximo" : "minimo"})`}
                 valor={formatearNumero(resultado.tAjustado)}
               />
               <TarjetaDato titulo="t * k" valor={formatearNumero(resultado.cobertura)} />
@@ -1207,26 +1219,47 @@ export function ModuloTablaEstadisticaAgrupada({
 
           <BloqueModulo
             titulo="7. Recalculo manual"
-            descripcion="Modifica k, fuerza un valor de t si lo necesitas y redistribuye el excedente dentro del rango permitido antes de recalcular."
+            descripcion={
+              esMetodoArbitrario
+                ? "Modifica k, elige como redondear t y redistribuye el excedente dentro del rango permitido antes de recalcular."
+                : "Elige como redondear k y t, y redistribuye el excedente dentro del rango permitido antes de recalcular."
+            }
           >
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-              <CampoFormulario
-                etiqueta="k manual para recalculo (opcional)"
-                valor={kManualRecalculo}
-                onChange={setKManualRecalculo}
-                tipo="number"
-                min={1}
-                placeholder={
-                  esMetodoArbitrario
-                    ? "Si lo dejas vacio se usa el k inicial"
-                    : "Si lo dejas vacio se usa el k de Sturges"
+              {esMetodoArbitrario ? (
+                <CampoFormulario
+                  etiqueta="k manual para recalculo"
+                  valor={kManualRecalculo}
+                  onChange={setKManualRecalculo}
+                  tipo="number"
+                  min={1}
+                  placeholder="Si lo dejas vacio se usa el k inicial"
+                />
+              ) : (
+                <CampoSelector
+                  etiqueta="Redondeo de k"
+                  valor={direccionRedondeoSturges}
+                  onChange={(valor) =>
+                    setDireccionRedondeoSturges(
+                      valor as DireccionRedondeoSturges,
+                    )
+                  }
+                  opciones={[
+                    { etiqueta: "Tomar maximo", valor: "arriba" },
+                    { etiqueta: "Tomar minimo", valor: "abajo" },
+                  ]}
+                />
+              )}
+              <CampoSelector
+                etiqueta="Redondeo de t"
+                valor={direccionRedondeoT}
+                onChange={(valor) =>
+                  setDireccionRedondeoT(valor as DireccionRedondeo)
                 }
-              />
-              <CampoFormulario
-                etiqueta="Tamaño de clase manual (opcional)"
-                valor={tManual}
-                onChange={setTManual}
-                placeholder="Puedes dejarlo vacio"
+                opciones={[
+                  { etiqueta: "Tomar maximo", valor: "arriba" },
+                  { etiqueta: "Tomar minimo", valor: "abajo" },
+                ]}
               />
 
               <label className="flex items-center gap-3 rounded-[1.15rem] border border-verde-claro bg-[#f9fbf7] px-4 py-4 text-[1.05rem] text-texto-principal xl:self-end">

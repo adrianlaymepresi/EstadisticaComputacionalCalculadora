@@ -1,8 +1,10 @@
+export type DireccionRedondeo = "arriba" | "abajo";
+
 export interface ConfiguracionDistribucionArbitraria {
   datos: number[];
   precision: number;
   k: number;
-  tManual?: number | null;
+  direccionRedondeoT?: DireccionRedondeo;
   noPermitirNegativos: boolean;
   ajusteInferiorPreferido?: number | null;
 }
@@ -32,7 +34,7 @@ export interface ResultadoDistribucionArbitraria {
   k: number;
   tBruto: number;
   tAjustado: number;
-  tManualAplicado: boolean;
+  direccionRedondeoT: DireccionRedondeo;
   cobertura: number;
   correccion: number;
   unidadesCorreccion: number;

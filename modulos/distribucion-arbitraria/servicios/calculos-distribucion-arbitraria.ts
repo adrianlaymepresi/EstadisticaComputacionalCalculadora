@@ -20,10 +20,6 @@ function convertirDesdeUnidades(valor: number, escala: number, precision: number
   return redondearNumero(valor / escala, precision);
 }
 
-function redondearHaciaArribaAUnidades(valor: number, escala: number): number {
-  return Math.ceil(valor * escala - 1e-9);
-}
-
 function aRomano(valor: number): string {
   if (!Number.isInteger(valor) || valor <= 0 || valor >= 4000) {
     return `${valor}`;
@@ -63,6 +59,7 @@ export function calcularDistribucionArbitraria(
 ): ResultadoDistribucionArbitraria {
   const { datos, precision, noPermitirNegativos } = configuracion;
   const k = Math.floor(configuracion.k);
+  const direccionRedondeoT = configuracion.direccionRedondeoT ?? "arriba";
 
   if (datos.length < 14) {
     throw new Error("Se necesitan al menos 14 datos para esta tecnica.");
@@ -84,8 +81,8 @@ export function calcularDistribucionArbitraria(
     Math.max(precision + 4, 6),
   );
   const tAjustadoUnidades =
-    configuracion.tManual !== null && configuracion.tManual !== undefined
-      ? redondearHaciaArribaAUnidades(configuracion.tManual, escala)
+    direccionRedondeoT === "abajo"
+      ? Math.floor(longitudAlcanceUnidades / k)
       : Math.ceil(longitudAlcanceUnidades / k);
 
   if (tAjustadoUnidades <= 0) {
@@ -189,8 +186,7 @@ export function calcularDistribucionArbitraria(
     k,
     tBruto,
     tAjustado: convertirDesdeUnidades(tAjustadoUnidades, escala, precision),
-    tManualAplicado:
-      configuracion.tManual !== null && configuracion.tManual !== undefined,
+    direccionRedondeoT,
     cobertura: convertirDesdeUnidades(coberturaUnidades, escala, precision),
     correccion: convertirDesdeUnidades(correccionUnidades, escala, precision),
     unidadesCorreccion: correccionUnidades,

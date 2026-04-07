@@ -2,7 +2,8 @@ export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
-  | "diagrama-columnas-compuestas";
+  | "diagrama-columnas-compuestas"
+  | "diagrama-barras";
 
 export interface TarjetaUnidad {
   id: string;
@@ -103,13 +104,20 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-barras",
         titulo: "DIAGRAMA DE BARRAS",
-        resumen: "Card reservada para la futura implementacion del diagrama de barras.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para trabajar con categorias y valores grandes, generar la tabla resumen y construir el diagrama de barras horizontal.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "El apartado esta listo para incorporar la logica y visualizacion del diagrama de barras.",
-        nota: "Mantendremos esta misma estructura para sumar las siguientes herramientas.",
-        estado: "proximamente",
-        palabrasClave: ["barras", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama de barras con ingreso de datos, tabla, grafico, personalizacion y exportacion.",
+        nota: "Lista para representar valores grandes mediante barras horizontales dentro del mismo sistema de trabajo.",
+        estado: "disponible",
+        palabrasClave: [
+          "barras",
+          "diagrama de barras",
+          "barras horizontales",
+          "valores grandes",
+        ],
+        herramientaId: "diagrama-barras",
       },
       {
         id: "diagrama-bastones",

@@ -4,7 +4,8 @@ export type IdentificadorHerramienta =
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
   | "diagrama-barras"
-  | "diagrama-bastones";
+  | "diagrama-bastones"
+  | "diagrama-pictogramas";
 
 export interface TarjetaUnidad {
   id: string;
@@ -142,13 +143,21 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-pictogramas",
         titulo: "DIAGRAMA DE PICTOGRAMAS",
-        resumen: "Card reservada para la futura implementacion del diagrama de pictogramas.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para cargar una imagen base, trabajar con una variable cualitativa y un valor cuantitativo, y construir el pictograma.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Aqui quedara el flujo de trabajo del diagrama de pictogramas cuando avancemos a esa formula.",
-        nota: "La navegacion ya soporta multiples cards en la misma unidad.",
-        estado: "proximamente",
-        palabrasClave: ["pictogramas", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama de pictogramas con imagen general, tabla estadistica, seleccion individual, personalizacion y exportacion.",
+        nota: "Lista para trabajar con figuras representativas usando una imagen general y cambios individuales por dato.",
+        estado: "disponible",
+        palabrasClave: [
+          "pictogramas",
+          "diagrama de pictogramas",
+          "variable cualitativa",
+          "figuras representativas",
+          "imagen base",
+        ],
+        herramientaId: "diagrama-pictogramas",
       },
       {
         id: "diagrama-burbujas",

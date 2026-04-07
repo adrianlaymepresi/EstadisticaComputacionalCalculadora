@@ -35,7 +35,27 @@ export function BarraLateralDashboard({
                       : "border-verde-claro bg-white/80 text-texto-principal hover:border-acento-principal hover:bg-crema-media"
                   }`}
                 >
-                  {unidad.titulo}
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p>{unidad.titulo}</p>
+                      <p
+                        className={`mt-1 text-xs font-medium ${
+                          esActiva ? "text-white/80" : "text-texto-secundario"
+                        }`}
+                      >
+                        {unidad.subtitulo}
+                      </p>
+                    </div>
+                    <span
+                      className={`inline-flex min-w-8 items-center justify-center rounded-full px-2 py-1 text-xs font-semibold ${
+                        esActiva
+                          ? "bg-white/15 text-white"
+                          : "bg-verde-suave text-acento-principal"
+                      }`}
+                    >
+                      {unidad.tarjetas.length}
+                    </span>
+                  </div>
                 </button>
               );
             })}

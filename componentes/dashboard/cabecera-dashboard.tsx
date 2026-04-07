@@ -2,7 +2,8 @@ import type { UnidadTematica } from "@/datos/dashboard";
 
 interface CabeceraDashboardProps {
   terminoBusqueda: string;
-  cantidadResultados: number;
+  cantidadUnidadesVisibles: number;
+  cantidadTarjetasVisibles: number;
   barraAbierta: boolean;
   unidadActiva: UnidadTematica | null;
   alAlternarBarra: () => void;
@@ -12,7 +13,8 @@ interface CabeceraDashboardProps {
 
 export function CabeceraDashboard({
   terminoBusqueda,
-  cantidadResultados,
+  cantidadUnidadesVisibles,
+  cantidadTarjetasVisibles,
   barraAbierta,
   unidadActiva,
   alAlternarBarra,
@@ -48,8 +50,8 @@ export function CabeceraDashboard({
                 Estadistica Computacional
               </h1>
               <p className="max-w-3xl text-sm leading-7 text-texto-secundario sm:text-base">
-                Plantilla base con mas espacio util para funciones largas,
-                cards enfocadas y una navegacion compacta.
+                Dashboard modular preparado para diagramas, calculos y nuevas
+                funcionalidades sin perder una estructura clara.
               </p>
             </div>
           </div>
@@ -66,7 +68,7 @@ export function CabeceraDashboard({
                 htmlFor="busqueda-unidades"
                 className="mb-2 block text-sm font-semibold text-texto-principal"
               >
-                Buscar unidad
+                Buscar en unidades y cards
               </label>
               <input
                 id="busqueda-unidades"
@@ -74,7 +76,7 @@ export function CabeceraDashboard({
                 inputMode="search"
                 value={terminoBusqueda}
                 onChange={(evento) => alCambiarBusqueda(evento.target.value)}
-                placeholder="Unidad 1, Unidad 2, card..."
+                placeholder="Unidad 1, burbujas, barras, pictogramas..."
                 className="min-h-12 w-full rounded-2xl border border-verde-claro bg-white/85 px-4 text-sm text-texto-principal outline-none transition focus-visible:border-acento-principal focus-visible:ring-4 focus-visible:ring-acento-principal/15"
               />
             </div>
@@ -88,7 +90,8 @@ export function CabeceraDashboard({
                 Limpiar
               </button>
               <div className="flex min-h-12 items-center rounded-2xl bg-acento-oscuro px-4 text-sm font-semibold text-white">
-                {cantidadResultados} visibles
+                {cantidadUnidadesVisibles} unidades / {cantidadTarjetasVisibles}{" "}
+                cards
               </div>
             </div>
           </div>

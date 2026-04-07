@@ -1,7 +1,11 @@
 "use client";
 
 import { startTransition, useDeferredValue, useState } from "react";
-import { unidadesTematicas, type UnidadTematica } from "@/datos/dashboard";
+import {
+  unidadesTematicas,
+  type TarjetaUnidad,
+  type UnidadTematica,
+} from "@/datos/dashboard";
 import { BarraLateralDashboard } from "@/componentes/dashboard/barra-lateral-dashboard";
 import { CabeceraDashboard } from "@/componentes/dashboard/cabecera-dashboard";
 import { SeccionUnidad } from "@/componentes/dashboard/seccion-unidad";
@@ -14,18 +18,61 @@ function normalizarTexto(texto: string) {
     .trim();
 }
 
-function coincideConBusqueda(unidad: UnidadTematica, terminoNormalizado: string) {
-  const contenidoBuscable = [
+function crearContenidoTarjeta(tarjeta: TarjetaUnidad) {
+  return [
+    tarjeta.titulo,
+    tarjeta.resumen,
+    tarjeta.descripcionTrabajo,
+    tarjeta.nota,
+    tarjeta.etiqueta,
+    ...tarjeta.palabrasClave,
+  ].join(" ");
+}
+
+function crearContenidoUnidad(unidad: UnidadTematica) {
+  return [
     unidad.titulo,
     unidad.subtitulo,
     unidad.descripcion,
     ...unidad.palabrasClave,
-    unidad.tarjeta.titulo,
-    unidad.tarjeta.resumen,
-    unidad.tarjeta.areaTitulo,
   ].join(" ");
+}
 
-  return normalizarTexto(contenidoBuscable).includes(terminoNormalizado);
+function coincideConBusqueda(unidad: UnidadTematica, terminoNormalizado: string) {
+  const unidadCoincide = normalizarTexto(crearContenidoUnidad(unidad)).includes(
+    terminoNormalizado,
+  );
+  if (unidadCoincide) {
+    return true;
+  }
+
+  return unidad.tarjetas.some((tarjeta) =>
+    normalizarTexto(crearContenidoTarjeta(tarjeta)).includes(
+      terminoNormalizado,
+    ),
+  );
+}
+
+function contarTarjetasCoincidentes(
+  unidad: UnidadTematica,
+  terminoNormalizado: string,
+) {
+  if (terminoNormalizado.length === 0) {
+    return unidad.tarjetas.length;
+  }
+
+  const unidadCoincide = normalizarTexto(crearContenidoUnidad(unidad)).includes(
+    terminoNormalizado,
+  );
+  if (unidadCoincide) {
+    return unidad.tarjetas.length;
+  }
+
+  return unidad.tarjetas.filter((tarjeta) =>
+    normalizarTexto(crearContenidoTarjeta(tarjeta)).includes(
+      terminoNormalizado,
+    ),
+  ).length;
 }
 
 interface EstadoSinResultadosProps {
@@ -39,11 +86,11 @@ function EstadoSinResultados({ terminoBusqueda }: EstadoSinResultadosProps) {
         Sin coincidencias
       </p>
       <h2 className="mt-3 text-2xl font-semibold text-texto-principal">
-        No encontramos apartados para &quot;{terminoBusqueda}&quot;
+        No encontramos unidades ni cards para &quot;{terminoBusqueda}&quot;
       </h2>
       <p className="mt-3 max-w-2xl text-sm leading-7 text-texto-secundario">
-        Prueba con terminos como unidad, card o limpia la busqueda para volver
-        a ver la plantilla completa.
+        Prueba con terminos como unidad, burbujas, barras o limpia la busqueda
+        para volver a ver el dashboard completo.
       </p>
     </section>
   );
@@ -69,15 +116,21 @@ export function PanelDashboardPrincipal() {
         )
       : unidadesTematicas;
 
+  const cantidadTarjetasCoincidentes = unidadesFiltradas.reduce(
+    (acumulado, unidad) =>
+      acumulado + contarTarjetasCoincidentes(unidad, terminoNormalizado),
+    0,
+  );
+
   const unidadActiva =
     unidadesFiltradas.find((unidad) => unidad.id === unidadSeleccionada) ??
     unidadesFiltradas[0] ??
     null;
 
   const identificadorActivo = unidadActiva?.id;
-  const tarjetaActiva = unidadActiva
-    ? tarjetaSeleccionada === unidadActiva.tarjeta.id
-    : false;
+  const tarjetaActiva =
+    unidadActiva?.tarjetas.find((tarjeta) => tarjeta.id === tarjetaSeleccionada) ??
+    null;
 
   function alternarBarra() {
     startTransition(() => {
@@ -99,6 +152,12 @@ export function PanelDashboardPrincipal() {
     });
   }
 
+  function cerrarTarjeta() {
+    startTransition(() => {
+      setTarjetaSeleccionada(null);
+    });
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-start lg:px-8">
       {barraAbierta ? (
@@ -112,7 +171,8 @@ export function PanelDashboardPrincipal() {
       <main className="flex min-w-0 flex-1 flex-col gap-4">
         <CabeceraDashboard
           terminoBusqueda={terminoBusqueda}
-          cantidadResultados={unidadesFiltradas.length}
+          cantidadUnidadesVisibles={unidadesFiltradas.length}
+          cantidadTarjetasVisibles={cantidadTarjetasCoincidentes}
           barraAbierta={barraAbierta}
           unidadActiva={unidadActiva}
           alAlternarBarra={alternarBarra}
@@ -122,9 +182,11 @@ export function PanelDashboardPrincipal() {
 
         {unidadActiva ? (
           <SeccionUnidad
+            key={unidadActiva.id}
             unidad={unidadActiva}
             tarjetaActiva={tarjetaActiva}
             alAbrirTarjeta={abrirTarjeta}
+            alCerrarTarjeta={cerrarTarjeta}
           />
         ) : (
           <EstadoSinResultados terminoBusqueda={terminoBusqueda} />

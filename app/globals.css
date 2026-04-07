@@ -13,6 +13,8 @@
   --color-crema-profunda: #e6dac8;
   --color-negro-principal: #111111;
   --color-negro-suave: #2d2926;
+  --estado-alerta: #9b3d2e;
+  --estado-exito: #2f6b52;
 
   --fondo-app: var(--color-crema-suave);
   --superficie-principal: rgba(255, 255, 255, 0.92);
@@ -44,6 +46,8 @@
   --color-verde-claro: var(--color-verde-claro);
   --color-crema-media: var(--color-crema-media);
   --color-crema-profunda: var(--color-crema-profunda);
+  --color-alerta: var(--estado-alerta);
+  --color-exito: var(--estado-exito);
   --font-sans: "Geist", "Geist Fallback", "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 }
@@ -64,10 +68,7 @@ body {
     radial-gradient(circle at bottom right, rgba(111, 78, 55, 0.12), transparent 24%),
     linear-gradient(180deg, #fcfaf7 0%, var(--fondo-app) 46%, #ece3d4 100%);
   color: var(--texto-principal);
-  font-family:
-    var(--font-geist-sans),
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font-sans);
 }
 
 a {
@@ -85,4 +86,34 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@keyframes aparecerSuave {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animacion-fade-in {
+  animation: aparecerSuave 220ms ease-out;
+}
+
+.animate-fadeIn {
+  animation: aparecerSuave 220ms ease-out;
 }

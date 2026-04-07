@@ -5,7 +5,8 @@ export type IdentificadorHerramienta =
   | "diagrama-columnas-compuestas"
   | "diagrama-barras"
   | "diagrama-bastones"
-  | "diagrama-pictogramas";
+  | "diagrama-pictogramas"
+  | "diagrama-dispersion";
 
 export interface TarjetaUnidad {
   id: string;
@@ -181,13 +182,20 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-dispersion",
         titulo: "DIAGRAMA DE DISPERSION",
-        resumen: "Card reservada para la futura implementacion del diagrama de dispersion.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para trabajar con dos variables cuantitativas, generar la tabla de pares y construir el diagrama de dispersion.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "El contenedor ya esta preparado para recibir la siguiente herramienta cuando la definamos.",
-        nota: "Seguiremos la misma estrategia modular para mantener el proyecto estable.",
-        estado: "proximamente",
-        palabrasClave: ["dispersion", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama de dispersion con ingreso de pares, tabla numerica, grafico, personalizacion y exportacion.",
+        nota: "Lista para analizar la relacion entre dos variables cuantitativas dentro del mismo flujo de trabajo.",
+        estado: "disponible",
+        palabrasClave: [
+          "dispersion",
+          "diagrama de dispersion",
+          "nube de puntos",
+          "dos variables cuantitativas",
+        ],
+        herramientaId: "diagrama-dispersion",
       },
       {
         id: "diagrama-lineal",

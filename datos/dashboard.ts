@@ -1,7 +1,8 @@
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
   | "diagrama-burbujas"
-  | "diagrama-columnas-simples";
+  | "diagrama-columnas-simples"
+  | "diagrama-columnas-compuestas";
 
 export interface TarjetaUnidad {
   id: string;
@@ -84,13 +85,20 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       {
         id: "diagrama-columnas-compuestas",
         titulo: "DIAGRAMA COLUMNAS COMPUESTAS",
-        resumen: "Card reservada para la futura implementacion de columnas compuestas.",
-        etiqueta: "Proximamente",
+        resumen:
+          "Herramienta funcional para comparar dos grupos por categoria, generar la tabla resumen y construir el diagrama de columnas compuestas.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Aqui integraremos despues la experiencia completa para columnas compuestas.",
-        nota: "La base modular ya queda preparada para ese siguiente paso.",
-        estado: "proximamente",
-        palabrasClave: ["columnas compuestas", "diagramas", "unidad 1,1"],
+          "Esta card abre el modulo completo del diagrama de columnas compuestas con ingreso de datos, tabla, grafico, personalizacion y exportacion.",
+        nota: "Lista para trabajar con una variable principal y dos series comparables dentro del mismo flujo.",
+        estado: "disponible",
+        palabrasClave: [
+          "columnas compuestas",
+          "diagrama de columnas compuestas",
+          "dos variables cualitativas",
+          "series comparadas",
+        ],
+        herramientaId: "diagrama-columnas-compuestas",
       },
       {
         id: "diagrama-barras",

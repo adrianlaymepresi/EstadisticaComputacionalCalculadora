@@ -8,6 +8,7 @@ import { ModuloDiagramaDispersion } from "@/modulos/diagrama-dispersion/componen
 import { ModuloDiagramaLineal } from "@/modulos/diagrama-lineal/componentes/modulo-diagrama-lineal";
 import { ModuloDiagramaPictogramas } from "@/modulos/diagrama-pictogramas/componentes/modulo-diagrama-pictogramas";
 import { ModuloDiagramaBurbujas } from "@/modulos/diagrama-burbujas/componentes/modulo-diagrama-burbujas";
+import { ModuloMetodoMaximoEntero } from "@/modulos/metodo-maximo-entero/componentes/modulo-metodo-maximo-entero";
 import { ModuloMetodoSturges } from "@/modulos/metodo-sturges/componentes/modulo-metodo-sturges";
 
 interface ContenidoTarjetaUnidadProps {
@@ -77,6 +78,8 @@ export function ContenidoTarjetaUnidad({
         <ModuloDistribucionArbitraria key={tarjeta.id} />
       ) : tarjeta.herramientaId === "metodo-sturges" ? (
         <ModuloMetodoSturges key={tarjeta.id} />
+      ) : tarjeta.herramientaId === "metodo-maximo-entero" ? (
+        <ModuloMetodoMaximoEntero key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-columnas-compuestas" ? (
         <ModuloDiagramaColumnasCompuestas key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-barras" ? (

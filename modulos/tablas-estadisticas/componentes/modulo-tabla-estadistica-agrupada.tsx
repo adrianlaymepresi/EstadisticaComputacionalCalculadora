@@ -15,8 +15,10 @@ const COLUMNAS_INICIALES = 5;
 const MAX_FILAS_CAPTURA = 20;
 const MAX_COLUMNAS_CAPTURA = 20;
 const MAXIMO_DATOS_STURGES = 16999;
+const MINIMO_DATOS_MAXIMO_ENTERO = 30;
+const MAXIMO_DATOS_MAXIMO_ENTERO = 300;
 
-type MetodoTablaAgrupada = "arbitraria" | "sturges";
+type MetodoTablaAgrupada = "arbitraria" | "sturges" | "maximo-entero";
 type DireccionRedondeoSturges = DireccionRedondeo;
 
 interface MensajeEstado {
@@ -183,6 +185,15 @@ function calcularKSturges(
   };
 }
 
+function calcularKMaximoEntero(cantidadDatos: number) {
+  const kExacto = 10 * Math.log10(cantidadDatos);
+
+  return {
+    kExacto,
+    kRedondeado: Math.max(1, Math.ceil(kExacto)),
+  };
+}
+
 function convertirAUnidadesCorreccion(valor: number, paso: number): number {
   return Math.round(valor / paso);
 }
@@ -319,6 +330,8 @@ export function ModuloTablaEstadisticaAgrupada({
   exportarExcel,
 }: ModuloTablaEstadisticaAgrupadaProps) {
   const esMetodoArbitrario = metodo === "arbitraria";
+  const esMetodoSturges = metodo === "sturges";
+  const esMetodoMaximoEntero = metodo === "maximo-entero";
   const [numeroTabla, setNumeroTabla] = useState("1");
   const [tituloDescriptivo, setTituloDescriptivo] = useState(
     "Descripcion de la muestra o de los datos analizados",
@@ -473,7 +486,7 @@ export function ModuloTablaEstadisticaAgrupada({
     cantidadDatos: number,
     usarKManual: boolean,
   ): ResumenMetodoTablaAgrupada => {
-    if (usarKManual && kManualRecalculo.trim()) {
+    if (esMetodoArbitrario && usarKManual && kManualRecalculo.trim()) {
       const kManual = Number(kManualRecalculo);
 
       if (!Number.isInteger(kManual) || kManual <= 0) {
@@ -484,10 +497,8 @@ export function ModuloTablaEstadisticaAgrupada({
         metodo,
         kUsado: kManual,
         kFueManual: true,
-        kExacto: esMetodoArbitrario
-          ? null
-          : calcularKSturges(cantidadDatos, direccionRedondeoSturges).kExacto,
-        direccionRedondeo: esMetodoArbitrario ? null : direccionRedondeoSturges,
+        kExacto: null,
+        direccionRedondeo: null,
         tExacto: null,
         direccionRedondeoT,
       };
@@ -511,17 +522,31 @@ export function ModuloTablaEstadisticaAgrupada({
       };
     }
 
-    const { kExacto, kRedondeado } = calcularKSturges(
-      cantidadDatos,
-      direccionRedondeoSturges,
-    );
+    if (esMetodoSturges) {
+      const { kExacto, kRedondeado } = calcularKSturges(
+        cantidadDatos,
+        direccionRedondeoSturges,
+      );
+
+      return {
+        metodo,
+        kUsado: kRedondeado,
+        kFueManual: false,
+        kExacto,
+        direccionRedondeo: direccionRedondeoSturges,
+        tExacto: null,
+        direccionRedondeoT,
+      };
+    }
+
+    const { kExacto, kRedondeado } = calcularKMaximoEntero(cantidadDatos);
 
     return {
       metodo,
       kUsado: kRedondeado,
       kFueManual: false,
       kExacto,
-      direccionRedondeo: direccionRedondeoSturges,
+      direccionRedondeo: null,
       tExacto: null,
       direccionRedondeoT,
     };
@@ -552,11 +577,24 @@ export function ModuloTablaEstadisticaAgrupada({
       return;
     }
 
-    if (!esMetodoArbitrario && datosParseados.length > MAXIMO_DATOS_STURGES) {
+    if (esMetodoSturges && datosParseados.length > MAXIMO_DATOS_STURGES) {
       setMensajeEstado({
         tipo: "error",
         texto:
           "Para la tecnica de Sturges necesitas una cantidad de datos mayor a 14 e inferior a 17.000.",
+      });
+      return;
+    }
+
+    if (
+      esMetodoMaximoEntero &&
+      (datosParseados.length < MINIMO_DATOS_MAXIMO_ENTERO ||
+        datosParseados.length > MAXIMO_DATOS_MAXIMO_ENTERO)
+    ) {
+      setMensajeEstado({
+        tipo: "error",
+        texto:
+          "Para la tecnica del maximo entero necesitas una cantidad de datos comprendida entre 30 y 300.",
       });
       return;
     }
@@ -798,10 +836,14 @@ export function ModuloTablaEstadisticaAgrupada({
 
   const tituloPrincipal = esMetodoArbitrario
     ? "Tecnica de Distribucion Arbitraria"
-    : "Tecnica de Sturges";
+    : esMetodoSturges
+      ? "Tecnica de Sturges"
+      : "Tecnica del Maximo Entero";
   const descripcionPrincipal = esMetodoArbitrario
     ? "Captura tus datos en una tabla, elige el numero de intervalos y construye la tabla estadistica agrupada paso a paso con recalculo manual de parametros."
-    : "Captura tus datos en una tabla y calcula la agrupacion por la regla de Sturges, con redondeo inicial del valor de k, redistribucion del excedente y recalculo manual.";
+    : esMetodoSturges
+      ? "Captura tus datos en una tabla y calcula la agrupacion por la regla de Sturges, con redondeo inicial del valor de k, redistribucion del excedente y recalculo manual."
+      : "Captura tus datos en una tabla y calcula la agrupacion por la tecnica del maximo entero, manteniendo la misma construccion paso a paso y el mismo control del excedente.";
 
   return (
     <div className="flex flex-col gap-8">
@@ -819,7 +861,9 @@ export function ModuloTablaEstadisticaAgrupada({
         descripcion={
           esMetodoArbitrario
             ? "Define la tabla, pega tus datos desde Excel y configura los parametros iniciales para la distribucion arbitraria."
-            : "Define la tabla, pega tus datos desde Excel y configura el redondeo inicial de k para la tecnica de Sturges."
+            : esMetodoSturges
+              ? "Define la tabla, pega tus datos desde Excel y configura el redondeo inicial de k para la tecnica de Sturges."
+              : "Define la tabla, pega tus datos desde Excel y prepara el calculo automatico de k por la tecnica del maximo entero."
         }
       >
         <div className="flex flex-col gap-6" onPaste={manejarPegadoDirecto}>
@@ -863,7 +907,7 @@ export function ModuloTablaEstadisticaAgrupada({
                 tipo="number"
                 min={1}
               />
-            ) : (
+            ) : esMetodoSturges ? (
               <CampoSelector
                 etiqueta="Redondeo inicial de k"
                 valor={direccionRedondeoSturges}
@@ -877,6 +921,15 @@ export function ModuloTablaEstadisticaAgrupada({
                   { etiqueta: "Hacia abajo", valor: "abajo" },
                 ]}
               />
+            ) : (
+              <div className="flex flex-col justify-end rounded-[1.15rem] border border-verde-claro bg-[#f9fbf7] px-4 py-4">
+                <span className="text-[1.02rem] font-medium text-texto-secundario">
+                  Calculo de k
+                </span>
+                <span className="mt-2 text-[1.12rem] font-semibold text-texto-principal">
+                  Maximo entero de 10 * log10(n)
+                </span>
+              </div>
             )}
             <CampoSelector
               etiqueta="Redondeo de t"
@@ -893,9 +946,26 @@ export function ModuloTablaEstadisticaAgrupada({
 
           {!esMetodoArbitrario ? (
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-              <TarjetaDato titulo="Formula de k" valor="1 + 3,3 * log10(n)" />
-              <TarjetaDato titulo="Minimo de datos" valor={`${MINIMO_DATOS + 1} o mas`} />
-              <TarjetaDato titulo="Maximo permitido" valor="16.999" />
+              <TarjetaDato
+                titulo="Formula de k"
+                valor={
+                  esMetodoSturges
+                    ? "1 + 3,3 * log10(n)"
+                    : "Maximo entero de 10 * log10(n)"
+                }
+              />
+              <TarjetaDato
+                titulo="Minimo de datos"
+                valor={
+                  esMetodoSturges
+                    ? `${MINIMO_DATOS + 1} o mas`
+                    : `${MINIMO_DATOS_MAXIMO_ENTERO}`
+                }
+              />
+              <TarjetaDato
+                titulo="Maximo permitido"
+                valor={esMetodoSturges ? "16.999" : `${MAXIMO_DATOS_MAXIMO_ENTERO}`}
+              />
             </div>
           ) : null}
 
@@ -1035,7 +1105,9 @@ export function ModuloTablaEstadisticaAgrupada({
             descripcion={
               esMetodoArbitrario
                 ? "El investigador fija libremente el numero de intervalos o clases."
-                : "El numero de intervalos se obtiene con la regla de Sturges y luego se redondea segun el criterio elegido."
+                : esMetodoSturges
+                  ? "El numero de intervalos se obtiene con la regla de Sturges y luego se redondea segun el criterio elegido."
+                  : "El numero de intervalos se obtiene con la tecnica del maximo entero aplicando la formula sobre n."
             }
           >
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
@@ -1047,16 +1119,30 @@ export function ModuloTablaEstadisticaAgrupada({
                     titulo="k exacto"
                     valor={formatearNumero(resumenMetodo.kExacto ?? 0, 4)}
                   />
+                  {esMetodoSturges ? (
+                    <TarjetaDato
+                      titulo="Redondeo"
+                      valor={
+                        resumenMetodo.direccionRedondeo === "arriba"
+                          ? "Hacia arriba"
+                          : "Hacia abajo"
+                      }
+                    />
+                  ) : (
+                    <TarjetaDato
+                      titulo="Criterio"
+                      valor="Maximo entero"
+                    />
+                  )}
+                  <TarjetaDato titulo="k aplicado" valor={`${resultado.k}`} />
                   <TarjetaDato
-                    titulo="Redondeo"
+                    titulo="Formula"
                     valor={
-                      resumenMetodo.direccionRedondeo === "arriba"
-                        ? "Hacia arriba"
-                        : "Hacia abajo"
+                      esMetodoSturges
+                        ? "1 + 3,3 * log10(n)"
+                        : "Maximo entero de 10 * log10(n)"
                     }
                   />
-                  <TarjetaDato titulo="k aplicado" valor={`${resultado.k}`} />
-                  <TarjetaDato titulo="Formula" valor="1 + 3,3 * log10(n)" />
                 </>
               )}
 
@@ -1222,7 +1308,9 @@ export function ModuloTablaEstadisticaAgrupada({
             descripcion={
               esMetodoArbitrario
                 ? "Modifica k, elige como redondear t y redistribuye el excedente dentro del rango permitido antes de recalcular."
-                : "Elige como redondear k y t, y redistribuye el excedente dentro del rango permitido antes de recalcular."
+                : esMetodoSturges
+                  ? "Elige como redondear k y t, y redistribuye el excedente dentro del rango permitido antes de recalcular."
+                  : "k se conserva por la tecnica del maximo entero. Aqui solo puedes ajustar el redondeo de t y redistribuir el excedente antes de recalcular."
             }
           >
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
@@ -1235,7 +1323,7 @@ export function ModuloTablaEstadisticaAgrupada({
                   min={1}
                   placeholder="Si lo dejas vacio se usa el k inicial"
                 />
-              ) : (
+              ) : esMetodoSturges ? (
                 <CampoSelector
                   etiqueta="Redondeo de k"
                   valor={direccionRedondeoSturges}
@@ -1249,6 +1337,15 @@ export function ModuloTablaEstadisticaAgrupada({
                     { etiqueta: "Tomar minimo", valor: "abajo" },
                   ]}
                 />
+              ) : (
+                <div className="flex flex-col justify-end rounded-[1.15rem] border border-verde-claro bg-[#f9fbf7] px-4 py-4">
+                  <span className="text-[1.02rem] font-medium text-texto-secundario">
+                    k fijo del metodo
+                  </span>
+                  <span className="mt-2 text-[1.12rem] font-semibold text-texto-principal">
+                    Maximo entero de 10 * log10(n) = {resultado.k}
+                  </span>
+                </div>
               )}
               <CampoSelector
                 etiqueta="Redondeo de t"

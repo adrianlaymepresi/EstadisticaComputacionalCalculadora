@@ -2,6 +2,7 @@ export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
   | "distribucion-arbitraria"
   | "metodo-sturges"
+  | "metodo-maximo-entero"
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
@@ -107,17 +108,18 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "metodo-maximo-entero",
         titulo: "METODO DEL MAXIMO ENTERO",
         resumen:
-          "Card preparada para resolver tablas estadisticas usando el criterio del maximo entero.",
-        etiqueta: "Proximamente",
+          "Herramienta funcional para calcular k con la tecnica del maximo entero, construir la tabla estadistica agrupada y recalcular sus parametros.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Aqui integraremos el metodo del maximo entero usando la misma estructura modular de captura, calculo y exportacion.",
-        nota: "Quedara lista para aprovechar casi toda la base del metodo arbitrario.",
-        estado: "proximamente",
+          "Esta card abre el modulo completo del metodo del maximo entero con captura de datos, calculo automatico de k, pasos detallados, tabla final, redistribucion del excedente, recalculo y exportacion.",
+        nota: "Lista para trabajar sobre la misma base de tablas agrupadas, cambiando el cuarto paso por la tecnica del maximo entero.",
+        estado: "disponible",
         palabrasClave: [
           "maximo entero",
           "tabla estadistica",
           "agrupacion",
         ],
+        herramientaId: "metodo-maximo-entero",
       },
       {
         id: "metodo-simple-inspeccion",

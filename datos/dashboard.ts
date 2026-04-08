@@ -3,6 +3,7 @@ export type IdentificadorHerramienta =
   | "distribucion-arbitraria"
   | "metodo-sturges"
   | "metodo-maximo-entero"
+  | "metodo-simple-inspeccion"
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
@@ -125,17 +126,18 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "metodo-simple-inspeccion",
         titulo: "METODO SIMPLE INSPECCION",
         resumen:
-          "Card preparada para construir tablas estadisticas por simple inspeccion con el mismo sistema de trabajo.",
-        etiqueta: "Proximamente",
+          "Herramienta funcional para construir tablas estadisticas directas por simple inspeccion, contando hasta 10 valores distintos.",
+        etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Aqui integraremos el metodo de simple inspeccion sobre la misma experiencia de captura, tabla final y exportacion.",
-        nota: "La estructura ya queda lista para conectarla despues sin desorden.",
-        estado: "proximamente",
+          "Esta card abre el modulo completo de simple inspeccion con captura de datos, agrupacion directa de valores, tabla final y exportacion.",
+        nota: "Lista para trabajar sin intervalos, calculando frecuencias y acumulados directamente sobre los valores observados.",
+        estado: "disponible",
         palabrasClave: [
           "simple inspeccion",
           "tabla estadistica",
           "inspeccion",
         ],
+        herramientaId: "metodo-simple-inspeccion",
       },
     ],
   },

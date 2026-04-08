@@ -160,6 +160,10 @@ function formatearNumeroEntrada(valor: number, precision: number): string {
   return texto.replace(/\.?0+$/, "");
 }
 
+function formatearValorConPrecision(valor: number, precision: number): string {
+  return formatearNumeroFijo(valor, Math.max(precision, 0));
+}
+
 function obtenerClasesMensaje(tipo: MensajeEstado["tipo"]): string {
   switch (tipo) {
     case "error":
@@ -1064,8 +1068,12 @@ export function ModuloTablaEstadisticaAgrupada({
               <TarjetaDato titulo="D" valor={formatearNumero(resultado.D)} />
               <TarjetaDato
                 titulo="a = [d; D]"
-                valor={`[${formatearNumero(resultado.alcance[0])}; ${formatearNumero(
+                valor={`[${formatearValorConPrecision(
+                  resultado.alcance[0],
+                  resultado.precision,
+                )}; ${formatearValorConPrecision(
                   resultado.alcance[1],
+                  resultado.precision,
                 )}]`}
               />
             </div>
@@ -1148,16 +1156,22 @@ export function ModuloTablaEstadisticaAgrupada({
 
               <TarjetaDato
                 titulo="Primer intervalo"
-                valor={`I1 = [${formatearNumero(resultado.minimoCorregido)}; ${formatearNumero(
+                valor={`I1 = [${formatearValorConPrecision(
+                  resultado.minimoCorregido,
+                  resultado.precision,
+                )}; ${formatearValorConPrecision(
                   resultado.minimoCorregido + resultado.tAjustado,
+                  resultado.precision,
                 )})`}
               />
               <TarjetaDato
                 titulo="Ultimo intervalo"
-                valor={`Ik = [${formatearNumero(
+                valor={`Ik = [${formatearValorConPrecision(
                   resultado.intervalos[resultado.intervalos.length - 1]?.limiteInferior ?? 0,
-                )}; ${formatearNumero(
+                  resultado.precision,
+                )}; ${formatearValorConPrecision(
                   resultado.intervalos[resultado.intervalos.length - 1]?.limiteSuperior ?? 0,
+                  resultado.precision,
                 )})`}
               />
             </div>
@@ -1194,8 +1208,12 @@ export function ModuloTablaEstadisticaAgrupada({
               />
               <TarjetaDato
                 titulo="Alcance corregido"
-                valor={`[${formatearNumero(resultado.minimoCorregido)}; ${formatearNumero(
+                valor={`[${formatearValorConPrecision(
+                  resultado.minimoCorregido,
+                  resultado.precision,
+                )}; ${formatearValorConPrecision(
                   resultado.maximoCorregido,
+                  resultado.precision,
                 )}]`}
               />
             </div>
@@ -1208,7 +1226,10 @@ export function ModuloTablaEstadisticaAgrupada({
               </p>
               <p className="mt-2 text-[1.06rem] leading-8 text-texto-principal">
                 La redistribucion {usarRedistribucionPersonalizada ? "esta siendo personalizada" : "usa el criterio predeterminado"} y el ultimo intervalo semiabierto queda cubierto hasta{" "}
-                {formatearNumero(resultado.ultimoLimiteSuperior)}.
+                {formatearValorConPrecision(
+                  resultado.ultimoLimiteSuperior,
+                  resultado.precision,
+                )}.
               </p>
             </div>
           </BloqueModulo>
@@ -1247,7 +1268,13 @@ export function ModuloTablaEstadisticaAgrupada({
                       className={indice % 2 === 0 ? "bg-white" : "bg-[#f9f3eb]"}
                     >
                       <td className="border-b border-black/8 px-4 py-4 text-[1.08rem] text-texto-principal">
-                        [{formatearNumero(intervalo.limiteInferior)}; {formatearNumero(intervalo.limiteSuperior)})
+                        [{formatearValorConPrecision(
+                          intervalo.limiteInferior,
+                          resultado.precision,
+                        )}; {formatearValorConPrecision(
+                          intervalo.limiteSuperior,
+                          resultado.precision,
+                        )})
                       </td>
                       <td className="border-b border-l border-black/8 px-4 py-4 text-[1.08rem] text-texto-principal">
                         {intervalo.conteo}

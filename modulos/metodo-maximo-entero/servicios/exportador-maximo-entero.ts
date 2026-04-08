@@ -7,6 +7,10 @@ import {
   descargarLibroExcel,
 } from "@/modulos/comun/servicios/exportador-excel";
 
+function formatearValorConPrecision(valor: number, precision: number): string {
+  return valor.toFixed(Math.max(precision, 0)).replace(".", ",");
+}
+
 export async function exportarExcelMaximoEntero(
   configuracion: ConfiguracionExportacionTablaAgrupada,
   nombreArchivo: string,
@@ -81,7 +85,13 @@ export async function exportarExcelMaximoEntero(
   configuracion.resultado.intervalos.forEach((intervalo, indice) => {
     const fila = filaTabla + indice + 1;
     const valores = [
-      `[${intervalo.limiteInferior}; ${intervalo.limiteSuperior})`,
+      `[${formatearValorConPrecision(
+        intervalo.limiteInferior,
+        configuracion.resultado.precision,
+      )}; ${formatearValorConPrecision(
+        intervalo.limiteSuperior,
+        configuracion.resultado.precision,
+      )})`,
       intervalo.conteo,
       intervalo.fi,
       intervalo.hi.toFixed(4).replace(".", ","),

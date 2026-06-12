@@ -71,6 +71,10 @@ function valorEntrada(racional: Racional) {
   return racionalADecimalCompleto(racional);
 }
 
+function razonComoRelacion(racional: Racional) {
+  return `${racional.numerador.toString()} : ${racional.denominador.toString()}`;
+}
+
 const cero = crearRacionalDesdeEntero(0);
 const cien = crearRacionalDesdeEntero(100);
 
@@ -98,6 +102,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de a",
         descripcion: "Primera magnitud de la razon.",
         placeholder: "Ejemplo: 60",
+        entero: true,
         noNegativo: true,
       },
       {
@@ -106,6 +111,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de b",
         descripcion: "Segunda magnitud de la razon.",
         placeholder: "Ejemplo: 20",
+        entero: true,
         positivo: true,
       },
     ],
@@ -129,13 +135,15 @@ export const configuracionesFormulasTema1: Record<
       const razon = dividirRacionales(racionales.a, racionales.b);
       const etiquetaA = etiquetaPersonalizada(estado.textosInterpretacion, "etiqueta-a", "a");
       const etiquetaB = etiquetaPersonalizada(estado.textosInterpretacion, "etiqueta-b", "b");
+      const fraccionSimplificada = racionalACadenaFraccion(razon);
       const razonDecimal = decimalSegunModo(razon, estado);
 
       return {
         tarjetas: [
-          { titulo: "Razon exacta", valor: racionalACadenaFraccion(razon) },
+          { titulo: "Fraccion simplificada", valor: fraccionSimplificada },
+          { titulo: "Razon equivalente", valor: razonComoRelacion(razon) },
           {
-            titulo: `Valor decimal (${descripcionPrecision(estado)})`,
+            titulo: `Valor decimal extra (${descripcionPrecision(estado)})`,
             valor: razonDecimal,
           },
         ],
@@ -147,15 +155,22 @@ export const configuracionesFormulasTema1: Record<
           {
             titulo: "Sustitucion",
             expresion: `${valorEntrada(racionales.a)} / ${valorEntrada(racionales.b)}`,
-            resultado: racionalACadenaFraccion(razon),
+            resultado: fraccionSimplificada,
           },
           {
-            titulo: "Valor decimal",
-            expresion: `${racionalACadenaFraccion(razon)}`,
+            titulo: "Razon simplificada",
+            expresion: fraccionSimplificada,
+            resultado: razonComoRelacion(razon),
+          },
+          {
+            titulo: "Apoyo decimal",
+            expresion: fraccionSimplificada,
             resultado: razonDecimal,
           },
         ],
-        interpretacion: `Por cada 1 de ${etiquetaB}, existen ${razonDecimal} de ${etiquetaA}.`,
+        interpretacion: `La razon simplificada entre ${etiquetaA} y ${etiquetaB} es ${razonComoRelacion(razon)}. Es decir, por cada ${razon.denominador.toString()} de ${etiquetaB}, existen ${razon.numerador.toString()} de ${etiquetaA}.`,
+        observacion:
+          "El valor decimal se muestra solo como apoyo extra. La salida principal para razon se conserva en su fraccion minima o forma equivalente a:b.",
       };
     },
   },
@@ -179,6 +194,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de a",
         descripcion: "Primera magnitud del indice.",
         placeholder: "Ejemplo: 60",
+        entero: true,
         noNegativo: true,
       },
       {
@@ -187,6 +203,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de b",
         descripcion: "Segunda magnitud del indice.",
         placeholder: "Ejemplo: 20",
+        entero: true,
         positivo: true,
       },
     ],
@@ -257,6 +274,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de a",
         descripcion: "Primera magnitud del total.",
         placeholder: "Ejemplo: 40",
+        entero: true,
         noNegativo: true,
       },
       {
@@ -265,6 +283,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de b",
         descripcion: "Segunda magnitud del total.",
         placeholder: "Ejemplo: 10",
+        entero: true,
         noNegativo: true,
       },
     ],
@@ -306,12 +325,13 @@ export const configuracionesFormulasTema1: Record<
       const etiquetaA = etiquetaPersonalizada(estado.textosInterpretacion, "etiqueta-a", "a");
       const etiquetaB = etiquetaPersonalizada(estado.textosInterpretacion, "etiqueta-b", "b");
       const etiquetaSeleccionada = opcion === "b" ? etiquetaB : etiquetaA;
+      const fraccionSimplificada = racionalACadenaFraccion(proporcion);
 
       return {
         tarjetas: [
-          { titulo: "Fraccion exacta", valor: racionalACadenaFraccion(proporcion) },
+          { titulo: "Fraccion simplificada", valor: fraccionSimplificada },
           {
-            titulo: `Proporcion (${descripcionPrecision(estado)})`,
+            titulo: `Valor decimal extra (${descripcionPrecision(estado)})`,
             valor: decimalSegunModo(proporcion, estado),
           },
           {
@@ -331,15 +351,17 @@ export const configuracionesFormulasTema1: Record<
               opcion === "b"
                 ? `${valorEntrada(racionales.b)} / (${valorEntrada(total)})`
                 : `${valorEntrada(racionales.a)} / (${valorEntrada(total)})`,
-            resultado: racionalACadenaFraccion(proporcion),
+            resultado: fraccionSimplificada,
           },
           {
-            titulo: "Valor decimal",
-            expresion: racionalACadenaFraccion(proporcion),
+            titulo: "Apoyo decimal",
+            expresion: fraccionSimplificada,
             resultado: decimalSegunModo(proporcion, estado),
           },
         ],
-        interpretacion: `${etiquetaSeleccionada} representa ${decimalSegunModo(proporcion, estado)} del total formado por ${etiquetaA} y ${etiquetaB}.`,
+        interpretacion: `${etiquetaSeleccionada} representa ${fraccionSimplificada} del total formado por ${etiquetaA} y ${etiquetaB}.`,
+        observacion:
+          "En proporcion se conserva primero la fraccion simplificada. El valor decimal queda como apoyo adicional.",
       };
     },
   },
@@ -364,6 +386,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de a",
         descripcion: "Primera magnitud del total.",
         placeholder: "Ejemplo: 40",
+        entero: true,
         noNegativo: true,
       },
       {
@@ -372,6 +395,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de b",
         descripcion: "Segunda magnitud del total.",
         placeholder: "Ejemplo: 10",
+        entero: true,
         noNegativo: true,
       },
     ],
@@ -471,6 +495,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de h",
         descripcion: "Cantidad menor o inicial.",
         placeholder: "Ejemplo: 60",
+        entero: true,
         positivo: true,
       },
       {
@@ -479,6 +504,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor de H",
         descripcion: "Cantidad mayor o final.",
         placeholder: "Ejemplo: 72",
+        entero: true,
         positivo: true,
       },
     ],
@@ -569,6 +595,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor exacto A",
         descripcion: "Valor tomado como referencia exacta.",
         placeholder: "Ejemplo: 25",
+        entero: true,
         positivo: true,
       },
       {
@@ -577,6 +604,7 @@ export const configuracionesFormulasTema1: Record<
         etiqueta: "Valor aproximado B",
         descripcion: "Valor medido o aproximado.",
         placeholder: "Ejemplo: 27",
+        entero: true,
         noNegativo: true,
       },
     ],

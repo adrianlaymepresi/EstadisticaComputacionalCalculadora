@@ -22,6 +22,19 @@ interface MensajeEstado {
   texto: string;
 }
 
+const teclasControlNumericas = new Set([
+  "Backspace",
+  "Delete",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+  "Tab",
+  "Home",
+  "End",
+  "Enter",
+]);
+
 function crearEstadoInicial(
   formulaId: IdentificadorFormulaTema1,
 ): EstadoCalculoFormula {
@@ -64,18 +77,36 @@ function describirRestriccionCampo(
   const restricciones: string[] = [];
 
   if (entero) {
-    restricciones.push("solo enteros");
+    restricciones.push("ingresa solo numeros enteros");
   } else {
     restricciones.push("admite enteros o decimales");
   }
 
   if (positivo) {
-    restricciones.push("mayor a 0");
+    restricciones.push("debe ser mayor a 0");
   } else if (noNegativo) {
-    restricciones.push("mayor o igual a 0");
+    restricciones.push("debe ser mayor o igual a 0");
   }
 
   return restricciones.join(" | ");
+}
+
+function manejarTeclaNumericaEntera(
+  evento: React.KeyboardEvent<HTMLInputElement>,
+) {
+  if (evento.ctrlKey || evento.metaKey || evento.altKey) {
+    return;
+  }
+
+  if (teclasControlNumericas.has(evento.key)) {
+    return;
+  }
+
+  if (/^\d$/.test(evento.key)) {
+    return;
+  }
+
+  evento.preventDefault();
 }
 
 function validarEntradas(
@@ -188,6 +219,24 @@ export function ModuloFormulaTema1({
   const [resultado, setResultado] = useState<ResultadoFormulaTema1 | null>(null);
 
   const actualizarValorNumerico = (campoId: string, valor: string) => {
+    const configuracionCampo = configuracion.camposNumericos.find(
+      (campo) => campo.id === campoId,
+    );
+
+    if (configuracionCampo?.entero) {
+      if (valor === "" || /^\d+$/.test(valor)) {
+        setEstado((estadoActual) => ({
+          ...estadoActual,
+          valoresNumericos: {
+            ...estadoActual.valoresNumericos,
+            [campoId]: valor,
+          },
+        }));
+      }
+
+      return;
+    }
+
     setEstado((estadoActual) => ({
       ...estadoActual,
       valoresNumericos: {
@@ -324,6 +373,12 @@ export function ModuloFormulaTema1({
         titulo="2. Datos de entrada"
         descripcion="Completa los valores, agrega etiquetas para la interpretacion si lo necesitas y define como quieres mostrar el resultado final."
       >
+        <div className="rounded-[1.4rem] border border-verde-claro bg-[#f9fbf7] p-4 text-sm leading-7 text-texto-secundario">
+          En estas formulas las entradas numericas se trabajan con valores
+          enteros. Los decimales aparecen solo en resultados porcentuales o como
+          apoyo adicional cuando convenga interpretar mejor el calculo.
+        </div>
+
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           {configuracion.camposNumericos.map((campo) => (
             <label key={campo.id} className="flex flex-col gap-2">
@@ -336,6 +391,24 @@ export function ModuloFormulaTema1({
                 value={estado.valoresNumericos[campo.id] ?? ""}
                 onChange={(evento) =>
                   actualizarValorNumerico(campo.id, evento.target.value)
+                }
+                onKeyDown={
+                  campo.entero ? manejarTeclaNumericaEntera : undefined
+                }
+                onPaste={
+                  campo.entero
+                    ? (evento) => {
+                        const textoPegado = evento.clipboardData.getData("text");
+
+                        if (!/^\d+$/.test(textoPegado.trim())) {
+                          evento.preventDefault();
+                          setMensajeEstado({
+                            tipo: "error",
+                            texto: `El campo ${campo.etiqueta} solo admite numeros enteros.`,
+                          });
+                        }
+                      }
+                    : undefined
                 }
                 placeholder={campo.placeholder}
                 className="min-h-14 rounded-[1.15rem] border border-verde-claro bg-white px-4 text-[1.12rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"

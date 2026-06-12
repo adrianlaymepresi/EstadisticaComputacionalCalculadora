@@ -1,4 +1,5 @@
 import { tarjetasFormulaTema1 } from "@/modulos/formulas-tema-1/servicios/configuraciones-formulas";
+import { tarjetasMedidasPosicion } from "@/modulos/medidas-posicion/servicios/configuraciones-medidas-posicion";
 
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
@@ -13,6 +14,15 @@ export type IdentificadorHerramienta =
   | "metodo-sturges"
   | "metodo-maximo-entero"
   | "metodo-simple-inspeccion"
+  | "medidas-posicion-todas"
+  | "media-aritmetica"
+  | "media-geometrica"
+  | "media-armonica"
+  | "mediana"
+  | "moda"
+  | "cuartiles"
+  | "deciles"
+  | "percentiles"
   | "diagrama-burbujas"
   | "diagrama-columnas-simples"
   | "diagrama-columnas-compuestas"
@@ -159,6 +169,24 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         herramientaId: "metodo-simple-inspeccion",
       },
     ],
+  },
+  {
+    id: "unidad-1-3",
+    titulo: "Unidad 1.3",
+    subtitulo: "Medidas de posicion",
+    descripcion:
+      "Modulo dedicado a medias, mediana, moda, cuartiles, deciles y percentiles para datos clasificados y no clasificados.",
+    palabrasClave: [
+      "unidad 1.3",
+      "medidas de posicion",
+      "media",
+      "mediana",
+      "moda",
+      "cuartiles",
+      "deciles",
+      "percentiles",
+    ],
+    tarjetas: tarjetasMedidasPosicion,
   },
   {
     id: "unidad-1-2-2",

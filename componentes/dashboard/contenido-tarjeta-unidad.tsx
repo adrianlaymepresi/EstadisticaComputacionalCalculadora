@@ -9,10 +9,12 @@ import { ModuloDiagramaLineal } from "@/modulos/diagrama-lineal/componentes/modu
 import { ModuloDiagramaPictogramas } from "@/modulos/diagrama-pictogramas/componentes/modulo-diagrama-pictogramas";
 import { ModuloDiagramaBurbujas } from "@/modulos/diagrama-burbujas/componentes/modulo-diagrama-burbujas";
 import { ModuloFormulaTema1 } from "@/modulos/formulas-tema-1/componentes/modulo-formula-tema-1";
+import { ModuloMedidaPosicion } from "@/modulos/medidas-posicion/componentes/modulo-medida-posicion";
 import { ModuloMetodoMaximoEntero } from "@/modulos/metodo-maximo-entero/componentes/modulo-metodo-maximo-entero";
 import { ModuloMetodoSimpleInspeccion } from "@/modulos/metodo-simple-inspeccion/componentes/modulo-metodo-simple-inspeccion";
 import { ModuloMetodoSturges } from "@/modulos/metodo-sturges/componentes/modulo-metodo-sturges";
 import type { IdentificadorFormulaTema1 } from "@/modulos/formulas-tema-1/tipos";
+import type { IdentificadorMedidaPosicion } from "@/modulos/medidas-posicion/tipos";
 
 interface ContenidoTarjetaUnidadProps {
   unidadTitulo: string;
@@ -73,6 +75,22 @@ function esFormulaTema1(
   );
 }
 
+function esMedidaPosicion(
+  herramientaId: TarjetaUnidad["herramientaId"],
+): herramientaId is IdentificadorMedidaPosicion {
+  return (
+    herramientaId === "medidas-posicion-todas" ||
+    herramientaId === "media-aritmetica" ||
+    herramientaId === "media-geometrica" ||
+    herramientaId === "media-armonica" ||
+    herramientaId === "mediana" ||
+    herramientaId === "moda" ||
+    herramientaId === "cuartiles" ||
+    herramientaId === "deciles" ||
+    herramientaId === "percentiles"
+  );
+}
+
 export function ContenidoTarjetaUnidad({
   unidadTitulo,
   tarjeta,
@@ -93,6 +111,11 @@ export function ContenidoTarjetaUnidad({
         <ModuloFormulaTema1
           key={tarjeta.herramientaId}
           formulaId={tarjeta.herramientaId}
+        />
+      ) : esMedidaPosicion(tarjeta.herramientaId) ? (
+        <ModuloMedidaPosicion
+          key={tarjeta.herramientaId}
+          medidaId={tarjeta.herramientaId}
         />
       ) : tarjeta.herramientaId === "diagrama-columnas-simples" ? (
         <ModuloDiagramaColumnasSimples key={tarjeta.id} />

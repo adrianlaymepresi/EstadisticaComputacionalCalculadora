@@ -1,5 +1,14 @@
+import { tarjetasFormulaTema1 } from "@/modulos/formulas-tema-1/servicios/configuraciones-formulas";
+
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
+  | "formula-razon"
+  | "formula-indice"
+  | "formula-proporcion"
+  | "formula-porcentaje"
+  | "formula-porcentaje-cambio"
+  | "formula-porcentaje-error"
+  | "formula-tasa"
   | "distribucion-arbitraria"
   | "metodo-sturges"
   | "metodo-maximo-entero"
@@ -34,37 +43,47 @@ export interface UnidadTematica {
   tarjetas: TarjetaUnidad[];
 }
 
+const tarjetasUnidadFormulas: TarjetaUnidad[] = tarjetasFormulaTema1.map(
+  (tarjeta) => ({
+    id: tarjeta.id,
+    titulo: tarjeta.titulo,
+    resumen: tarjeta.resumen,
+    etiqueta: "Disponible ahora",
+    descripcionTrabajo:
+      "Muestra la formula, explica las variables, valida los datos de entrada y desarrolla el calculo paso a paso con interpretacion final.",
+    nota: "Incluye fraccion exacta cuando corresponde y precision decimal configurable.",
+    estado: "disponible",
+    palabrasClave: tarjeta.palabrasClave,
+    herramientaId: tarjeta.id,
+  }),
+);
+
 export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
   {
-    id: "unidad-1",
-    titulo: "Unidad 1",
-    subtitulo: "Base principal",
+    id: "unidad-1-1",
+    titulo: "Unidad 1.1",
+    subtitulo: "Tema 1 - formulas",
     descripcion:
-      "Bloque inicial del dashboard preparado para recibir calculos, tablas y futuras operaciones sin perder orden.",
-    palabrasClave: ["unidad 1", "base", "calculos", "tablas", "resultados"],
-    tarjetas: [
-      {
-        id: "unidad-1-base",
-        titulo: "BASES Y CONCEPTOS",
-        resumen:
-          "Espacio reservado para los primeros procesos y herramientas de esta unidad.",
-        etiqueta: "Preparado",
-        descripcionTrabajo:
-          "Aqui podremos montar formularios, tablas de apoyo y resultados extensos para los primeros temas.",
-        nota: "La estructura ya queda lista para ir creciendo paso a paso.",
-        estado: "proximamente",
-        palabrasClave: ["bases", "conceptos", "unidad 1", "inicio"],
-      },
+      "Formulas operativas del Tema 1 para razon, indice, proporciones, porcentaje, cambio, error y tasas.",
+    palabrasClave: [
+      "unidad 1.1",
+      "tema 1",
+      "formulas",
+      "razon",
+      "indice",
+      "porcentaje",
+      "tasa",
     ],
+    tarjetas: tarjetasUnidadFormulas,
   },
   {
-    id: "unidad-1-0",
-    titulo: "Unidad 1,0",
+    id: "unidad-1-2-1",
+    titulo: "Unidad 1.2.1",
     subtitulo: "Tablas estadisticas",
     descripcion:
-      "Bloque preparado para construir tablas estadisticas paso a paso, con metodos agrupados y una base reutilizable para recalcular y exportar resultados.",
+      "Metodos para construir tablas estadisticas con distribucion arbitraria, Sturges, maximo entero y simple inspeccion.",
     palabrasClave: [
-      "unidad 1,0",
+      "unidad 1.2.1",
       "tablas estadisticas",
       "distribucion arbitraria",
       "sturges",
@@ -76,11 +95,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "distribucion-arbitraria",
         titulo: "DISTRIBUCION ARBITRARIA",
         resumen:
-          "Herramienta funcional para construir tablas estadisticas agrupadas usando k elegido por el investigador y recalculo manual de parametros.",
+          "Construye tablas agrupadas usando el valor de k definido por el usuario.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo de distribucion arbitraria con captura de datos en tabla, pasos detallados, tabla final, recalculo y exportacion.",
-        nota: "Lista para servir como modelo base de las demas tecnicas de tablas estadisticas.",
+          "Abre el modulo completo con ingreso de datos, pasos detallados, tabla final, recalculo y exportacion.",
+        nota: "Sirve como base reutilizable para los otros metodos agrupados.",
         estado: "disponible",
         palabrasClave: [
           "distribucion arbitraria",
@@ -96,11 +115,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "metodo-sturges",
         titulo: "METODO DE STURGES",
         resumen:
-          "Herramienta funcional para calcular k con la regla de Sturges, construir la tabla estadistica agrupada y recalcular sus parametros.",
+          "Calcula k con la regla de Sturges y arma la tabla estadistica agrupada.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del metodo de Sturges con captura de datos, redondeo inicial de k, pasos detallados, tabla final, redistribucion del excedente, recalculo y exportacion.",
-        nota: "Lista para trabajar sobre la misma base de tablas agrupadas, cambiando solo el origen de k.",
+          "Abre el modulo completo con captura de datos, calculo de k, pasos, recalculo y exportacion.",
+        nota: "Permite elegir el redondeo de k y del tamano de clase sin romper el flujo.",
         estado: "disponible",
         palabrasClave: ["sturges", "tabla estadistica", "k", "intervalos"],
         herramientaId: "metodo-sturges",
@@ -109,11 +128,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "metodo-maximo-entero",
         titulo: "METODO DEL MAXIMO ENTERO",
         resumen:
-          "Herramienta funcional para calcular k con la tecnica del maximo entero, construir la tabla estadistica agrupada y recalcular sus parametros.",
+          "Calcula k con la tecnica del maximo entero y construye la tabla agrupada.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del metodo del maximo entero con captura de datos, calculo automatico de k, pasos detallados, tabla final, redistribucion del excedente, recalculo y exportacion.",
-        nota: "Lista para trabajar sobre la misma base de tablas agrupadas, cambiando el cuarto paso por la tecnica del maximo entero.",
+          "Abre el modulo completo con captura de datos, calculo automatico de k, pasos, recalculo y exportacion.",
+        nota: "Mantiene la misma estructura de trabajo de las tablas agrupadas.",
         estado: "disponible",
         palabrasClave: [
           "maximo entero",
@@ -126,11 +145,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "metodo-simple-inspeccion",
         titulo: "METODO SIMPLE INSPECCION",
         resumen:
-          "Herramienta funcional para construir tablas estadisticas directas por simple inspeccion, contando hasta 10 valores distintos.",
+          "Construye tablas directas sin intervalos cuando hay hasta 10 datos distintos.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo de simple inspeccion con captura de datos, agrupacion directa de valores, tabla final y exportacion.",
-        nota: "Lista para trabajar sin intervalos, calculando frecuencias y acumulados directamente sobre los valores observados.",
+          "Abre el modulo de captura directa, agrupacion por valores observados y exportacion a Excel.",
+        nota: "Calcula frecuencias simples, relativas y acumuladas sin recalculo manual.",
         estado: "disponible",
         palabrasClave: [
           "simple inspeccion",
@@ -142,13 +161,13 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
     ],
   },
   {
-    id: "unidad-1-1",
-    titulo: "Unidad 1,1",
+    id: "unidad-1-2-2",
+    titulo: "Unidad 1.2.2",
     subtitulo: "Diagramadores estadisticos",
     descripcion:
-      "Catalogo inicial de diagramas estadisticos. La primera integracion funcional queda lista en el modulo de burbujas.",
+      "Diagramas estadisticos del bloque actual con captura de datos, personalizacion y exportacion.",
     palabrasClave: [
-      "unidad 1,1",
+      "unidad 1.2.2",
       "diagramas",
       "graficos",
       "burbujas",
@@ -160,11 +179,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-columnas-simples",
         titulo: "DIAGRAMA COLUMNAS SIMPLES",
         resumen:
-          "Herramienta funcional para cargar categorias y valores, generar la tabla estadistica y construir el diagrama de columnas simple.",
+          "Trabaja con categorias y valores para generar tabla y diagrama de columnas simple.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de columnas simples con ingreso de datos, tabla resumen, grafico, personalizacion y exportacion.",
-        nota: "Lista para trabajar con nombres y valores, igual que el flujo de burbujas adaptado a este diagrama.",
+          "Abre el modulo completo con captura de datos, tabla, grafico, personalizacion y exportacion.",
+        nota: "Mantiene el mismo flujo de trabajo usado en los demas diagramadores.",
         estado: "disponible",
         palabrasClave: [
           "columnas simples",
@@ -179,11 +198,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-columnas-compuestas",
         titulo: "DIAGRAMA COLUMNAS COMPUESTAS",
         resumen:
-          "Herramienta funcional para comparar dos grupos por categoria, generar la tabla resumen y construir el diagrama de columnas compuestas.",
+          "Compara dos grupos por categoria y construye el diagrama de columnas compuestas.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de columnas compuestas con ingreso de datos, tabla, grafico, personalizacion y exportacion.",
-        nota: "Lista para trabajar con una variable principal y dos series comparables dentro del mismo flujo.",
+          "Abre el modulo completo con ingreso de datos, tabla, grafico, personalizacion y exportacion.",
+        nota: "Permite trabajar dos series dentro de una misma categoria principal.",
         estado: "disponible",
         palabrasClave: [
           "columnas compuestas",
@@ -197,11 +216,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-barras",
         titulo: "DIAGRAMA DE BARRAS",
         resumen:
-          "Herramienta funcional para trabajar con categorias y valores grandes, generar la tabla resumen y construir el diagrama de barras horizontal.",
+          "Representa categorias con valores grandes usando barras horizontales.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de barras con ingreso de datos, tabla, grafico, personalizacion y exportacion.",
-        nota: "Lista para representar valores grandes mediante barras horizontales dentro del mismo sistema de trabajo.",
+          "Abre el modulo completo con captura de datos, tabla, grafico, personalizacion y exportacion.",
+        nota: "Pensado para valores grandes en una lectura horizontal clara.",
         estado: "disponible",
         palabrasClave: [
           "barras",
@@ -215,11 +234,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-bastones",
         titulo: "DIAGRAMA DE BASTONES",
         resumen:
-          "Herramienta funcional para ingresar valores discretos con su fi, generar la tabla xi-fi-pi y construir el diagrama de bastones.",
+          "Trabaja con valores discretos y su fi para generar la tabla y el diagrama de bastones.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de bastones con ingreso de valores, tabla estadistica, grafico, personalizacion y exportacion.",
-        nota: "Lista para trabajar con pocos valores cuantitativos y sus frecuencias dentro del mismo flujo.",
+          "Abre el modulo completo con valores, frecuencias, grafico, personalizacion y exportacion.",
+        nota: "Ideal para pocos valores cuantitativos discretos.",
         estado: "disponible",
         palabrasClave: [
           "bastones",
@@ -234,11 +253,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-pictogramas",
         titulo: "DIAGRAMA DE PICTOGRAMAS",
         resumen:
-          "Herramienta funcional para cargar una imagen base, trabajar con una variable cualitativa y un valor cuantitativo, y construir el pictograma.",
+          "Usa una imagen base para representar una variable cualitativa con valores cuantitativos.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de pictogramas con imagen general, tabla estadistica, seleccion individual, personalizacion y exportacion.",
-        nota: "Lista para trabajar con figuras representativas usando una imagen general y cambios individuales por dato.",
+          "Abre el modulo completo con carga de imagen, seleccion individual, tabla y exportacion.",
+        nota: "Permite usar una figura general y luego personalizar por dato.",
         estado: "disponible",
         palabrasClave: [
           "pictogramas",
@@ -253,11 +272,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-burbujas",
         titulo: "DIAGRAMA DE BURBUJAS",
         resumen:
-          "Herramienta funcional integrada desde DiagramadoresEstadisticos con configuracion, tabla, visualizacion y exportacion.",
+          "Integra el flujo completo del diagramador de burbujas con tabla, configuracion y exportacion.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de burbujas y replica el flujo del proyecto fuente adaptado al dashboard.",
-        nota: "Lista para trabajar tal como en el proyecto original, ahora dentro de este sistema.",
+          "Abre el modulo completo del diagrama de burbujas adaptado al dashboard.",
+        nota: "Replica el comportamiento del proyecto original dentro del sistema actual.",
         estado: "disponible",
         palabrasClave: [
           "burbujas",
@@ -272,11 +291,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-dispersion",
         titulo: "DIAGRAMA DE DISPERSION",
         resumen:
-          "Herramienta funcional para trabajar con dos variables cuantitativas, generar la tabla de pares y construir el diagrama de dispersion.",
+          "Relaciona dos variables cuantitativas en una nube de puntos.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama de dispersion con ingreso de pares, tabla numerica, grafico, personalizacion y exportacion.",
-        nota: "Lista para analizar la relacion entre dos variables cuantitativas dentro del mismo flujo de trabajo.",
+          "Abre el modulo completo con ingreso de pares, tabla, grafico, personalizacion y exportacion.",
+        nota: "Sirve para analizar relaciones entre dos variables cuantitativas.",
         estado: "disponible",
         palabrasClave: [
           "dispersion",
@@ -290,11 +309,11 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
         id: "diagrama-lineal",
         titulo: "DIAGRAMA LINEAL",
         resumen:
-          "Herramienta funcional para trabajar con una variable ordinal en el eje X y una variable cuantitativa en el eje Y mediante una linea de tendencia simple.",
+          "Representa una tendencia simple con eje X ordinal y eje Y cuantitativo.",
         etiqueta: "Disponible ahora",
         descripcionTrabajo:
-          "Esta card abre el modulo completo del diagrama lineal con ingreso de datos, tabla horizontal, grafico, personalizacion y exportacion.",
-        nota: "Lista para representar tendencias simples con periodos ordinales y valores cuantitativos dentro del mismo flujo de trabajo.",
+          "Abre el modulo completo con captura de datos, tabla, grafico, personalizacion y exportacion.",
+        nota: "Permite trabajar periodos ordinales con valores cuantitativos.",
         estado: "disponible",
         palabrasClave: [
           "lineal",
@@ -304,50 +323,6 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
           "variable ordinal",
         ],
         herramientaId: "diagrama-lineal",
-      },
-    ],
-  },
-  {
-    id: "unidad-1-2",
-    titulo: "Unidad 1,2",
-    subtitulo: "Subapartado adicional",
-    descripcion:
-      "Seccion preparada para seguir creciendo con modulos independientes y un flujo de trabajo claro.",
-    palabrasClave: ["unidad 1,2", "estructura", "responsive", "modulos"],
-    tarjetas: [
-      {
-        id: "unidad-1-2-base",
-        titulo: "MODULO EN PREPARACION",
-        resumen:
-          "Base reservada para la siguiente herramienta que conectemos en este subapartado.",
-        etiqueta: "Preparado",
-        descripcionTrabajo:
-          "Esta zona queda disponible para formularios largos, calculos y salidas amplias.",
-        nota: "Lista para una funcionalidad con varias entradas y resultados.",
-        estado: "proximamente",
-        palabrasClave: ["unidad 1,2", "preparacion", "modulo"],
-      },
-    ],
-  },
-  {
-    id: "unidad-2",
-    titulo: "Unidad 2",
-    subtitulo: "Siguiente bloque del curso",
-    descripcion:
-      "Base visual limpia para continuar agregando apartados del curso sin romper la estructura general.",
-    palabrasClave: ["unidad 2", "vercel", "modular", "funciones"],
-    tarjetas: [
-      {
-        id: "unidad-2-base",
-        titulo: "PREPARAR VISTA DE TRABAJO",
-        resumen:
-          "Card inicial para arrancar la siguiente etapa del dashboard cuando nos indiques.",
-        etiqueta: "Lista",
-        descripcionTrabajo:
-          "Este espacio esta pensado para herramientas mas extensas y contenido de mayor longitud.",
-        nota: "Queda listo para recibir nuevos calculos paso a paso.",
-        estado: "proximamente",
-        palabrasClave: ["unidad 2", "vista de trabajo", "preparacion"],
       },
     ],
   },

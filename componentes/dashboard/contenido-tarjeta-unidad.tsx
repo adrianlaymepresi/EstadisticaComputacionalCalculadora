@@ -8,9 +8,11 @@ import { ModuloDiagramaDispersion } from "@/modulos/diagrama-dispersion/componen
 import { ModuloDiagramaLineal } from "@/modulos/diagrama-lineal/componentes/modulo-diagrama-lineal";
 import { ModuloDiagramaPictogramas } from "@/modulos/diagrama-pictogramas/componentes/modulo-diagrama-pictogramas";
 import { ModuloDiagramaBurbujas } from "@/modulos/diagrama-burbujas/componentes/modulo-diagrama-burbujas";
+import { ModuloFormulaTema1 } from "@/modulos/formulas-tema-1/componentes/modulo-formula-tema-1";
 import { ModuloMetodoMaximoEntero } from "@/modulos/metodo-maximo-entero/componentes/modulo-metodo-maximo-entero";
 import { ModuloMetodoSimpleInspeccion } from "@/modulos/metodo-simple-inspeccion/componentes/modulo-metodo-simple-inspeccion";
 import { ModuloMetodoSturges } from "@/modulos/metodo-sturges/componentes/modulo-metodo-sturges";
+import type { IdentificadorFormulaTema1 } from "@/modulos/formulas-tema-1/tipos";
 
 interface ContenidoTarjetaUnidadProps {
   unidadTitulo: string;
@@ -57,6 +59,20 @@ function VistaPlaceholderTarjeta({
   );
 }
 
+function esFormulaTema1(
+  herramientaId: TarjetaUnidad["herramientaId"],
+): herramientaId is IdentificadorFormulaTema1 {
+  return (
+    herramientaId === "formula-razon" ||
+    herramientaId === "formula-indice" ||
+    herramientaId === "formula-proporcion" ||
+    herramientaId === "formula-porcentaje" ||
+    herramientaId === "formula-porcentaje-cambio" ||
+    herramientaId === "formula-porcentaje-error" ||
+    herramientaId === "formula-tasa"
+  );
+}
+
 export function ContenidoTarjetaUnidad({
   unidadTitulo,
   tarjeta,
@@ -73,7 +89,12 @@ export function ContenidoTarjetaUnidad({
         {unidadTitulo}
       </button>
 
-      {tarjeta.herramientaId === "diagrama-columnas-simples" ? (
+      {esFormulaTema1(tarjeta.herramientaId) ? (
+        <ModuloFormulaTema1
+          key={tarjeta.herramientaId}
+          formulaId={tarjeta.herramientaId}
+        />
+      ) : tarjeta.herramientaId === "diagrama-columnas-simples" ? (
         <ModuloDiagramaColumnasSimples key={tarjeta.id} />
       ) : tarjeta.herramientaId === "distribucion-arbitraria" ? (
         <ModuloDistribucionArbitraria key={tarjeta.id} />

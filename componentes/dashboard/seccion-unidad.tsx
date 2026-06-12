@@ -117,11 +117,10 @@ export function SeccionUnidad({
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-semibold text-texto-principal">
-                  Menu de cards
+                  Cards disponibles
                 </p>
                 <p className="text-sm leading-6 text-texto-secundario">
-                  Selecciona una card y la interfaz cambiara para trabajar solo
-                  en esa herramienta.
+                  Abre una card para trabajar solo en esa herramienta.
                 </p>
               </div>
               <span className="inline-flex w-fit rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-acento-secundario">
@@ -135,7 +134,7 @@ export function SeccionUnidad({
                   htmlFor={`busqueda-tarjetas-${unidad.id}`}
                   className="mb-2 block text-sm font-semibold text-texto-principal"
                 >
-                  Buscar card dentro de {unidad.titulo}
+                  Buscar card en esta unidad
                 </label>
                 <input
                   id={`busqueda-tarjetas-${unidad.id}`}
@@ -143,7 +142,7 @@ export function SeccionUnidad({
                   inputMode="search"
                   value={terminoTarjetas}
                   onChange={(evento) => setTerminoTarjetas(evento.target.value)}
-                  placeholder="Columnas, burbujas, lineal..."
+                  placeholder="Busca por nombre o tema de la card"
                   className="min-h-12 w-full rounded-2xl border border-verde-claro bg-white/85 px-4 text-sm text-texto-principal outline-none transition focus-visible:border-acento-principal focus-visible:ring-4 focus-visible:ring-acento-principal/15"
                 />
               </div>
@@ -153,7 +152,7 @@ export function SeccionUnidad({
                 onClick={() => setTerminoTarjetas("")}
                 className="min-h-12 rounded-2xl border border-verde-claro bg-white/85 px-4 text-sm font-semibold text-texto-principal transition hover:border-acento-principal hover:text-acento-principal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-principal lg:self-end"
               >
-                Limpiar cards
+                Limpiar
               </button>
             </div>
           </div>

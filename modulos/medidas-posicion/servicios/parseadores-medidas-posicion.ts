@@ -181,9 +181,9 @@ export function validarFilasClasificadas(
         );
       }
 
-      if (!Number.isInteger(fi) || fi <= 0) {
+      if (!Number.isInteger(fi) || fi < 0) {
         throw new Error(
-          `La frecuencia fi de la fila ${indice + 1} debe ser un entero positivo.`,
+          `La frecuencia fi de la fila ${indice + 1} debe ser un entero no negativo.`,
         );
       }
 
@@ -222,6 +222,17 @@ export function validarFilasClasificadas(
       );
     }
   });
+
+  const totalFrecuencias = filasValidadas.reduce(
+    (acumulado, fila) => acumulado + fila.fi,
+    0,
+  );
+
+  if (totalFrecuencias <= 0) {
+    throw new Error(
+      "La suma total de frecuencias debe ser mayor que cero para poder calcular.",
+    );
+  }
 
   return filasValidadas;
 }

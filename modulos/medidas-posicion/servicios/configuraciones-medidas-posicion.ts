@@ -51,7 +51,7 @@ export const configuracionesMedidasPosicion: Record<
     ],
     condicionesClasificados: [
       "Ls debe ser mayor que Li en cada fila.",
-      "fi debe ser un entero positivo.",
+      "fi debe ser un entero no negativo.",
       "Las clases deben ingresarse en orden ascendente y sin traslapes.",
     ],
     ejemploNoClasificados: "5; 7; 2; 9; 3; 7; 4",
@@ -85,7 +85,7 @@ export const configuracionesMedidasPosicion: Record<
     ],
     condicionesClasificados: [
       "Li y Ls pueden ser enteros o decimales.",
-      "fi debe ser entero positivo.",
+      "fi debe ser entero no negativo.",
     ],
     ejemploNoClasificados: "5; 7; 2; 9; 3; 7; 4",
     ejemploClasificados: [
@@ -123,8 +123,8 @@ export const configuracionesMedidasPosicion: Record<
       "La media geometrica carece de sentido para datos negativos o nulos.",
     ],
     condicionesClasificados: [
-      "Todas las marcas de clase xi deben ser mayores que cero.",
-      "fi debe ser entero positivo.",
+      "Si fi es mayor que cero, la marca de clase xi debe ser mayor que cero.",
+      "fi debe ser entero no negativo.",
     ],
     ejemploNoClasificados: "1,08; 1,10; 1,15; 1,20",
     ejemploClasificados: [
@@ -162,8 +162,8 @@ export const configuracionesMedidasPosicion: Record<
       "Para un uso seguro en este modulo se trabajan valores mayores que cero.",
     ],
     condicionesClasificados: [
-      "Las marcas de clase xi deben ser mayores que cero.",
-      "fi debe ser entero positivo.",
+      "Si fi es mayor que cero, la marca de clase xi debe ser mayor que cero.",
+      "fi debe ser entero no negativo.",
     ],
     ejemploNoClasificados: "2,00; 1,60; 1,30; 1,00",
     ejemploClasificados: [
@@ -208,7 +208,7 @@ export const configuracionesMedidasPosicion: Record<
     ],
     condicionesClasificados: [
       "La clase mediana es la primera cuya Fi alcanza o supera n/2.",
-      "fi debe ser entero positivo.",
+      "fi debe ser entero no negativo.",
     ],
     ejemploNoClasificados: "8; 10; 0; 9; 2; 12; 12",
     ejemploClasificados: [
@@ -301,7 +301,7 @@ export const configuracionesMedidasPosicion: Record<
       etiqueta: "Cuartil a calcular",
       minimo: 1,
       maximo: 3,
-      valorInicial: 1,
+      valorInicial: 2,
     },
   },
   deciles: {
@@ -343,7 +343,7 @@ export const configuracionesMedidasPosicion: Record<
       etiqueta: "Decil a calcular",
       minimo: 1,
       maximo: 9,
-      valorInicial: 3,
+      valorInicial: 5,
     },
   },
   percentiles: {
@@ -394,7 +394,7 @@ export const configuracionesMedidasPosicion: Record<
       etiqueta: "Percentil a calcular",
       minimo: 1,
       maximo: 99,
-      valorInicial: 75,
+      valorInicial: 50,
     },
   },
 };

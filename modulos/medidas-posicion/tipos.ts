@@ -128,4 +128,7 @@ export type ResultadoCalculoMedidasPosicion =
 export interface OpcionesSalidaMedidaPosicion {
   decimales: number | "todos";
   valorCuantil?: number;
+  valorCuartil?: number;
+  valorDecil?: number;
+  valorPercentil?: number;
 }

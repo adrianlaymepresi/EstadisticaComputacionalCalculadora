@@ -6,6 +6,10 @@ import { CapturaDatosClasificados } from "@/modulos/medidas-posicion/componentes
 import { CapturaDatosNoClasificados } from "@/modulos/medidas-posicion/componentes/captura-datos-no-clasificados";
 import { calcularModuloMedidasPosicion } from "@/modulos/medidas-posicion/servicios/calculos-medidas-posicion";
 import { exportarExcelMedidasPosicion } from "@/modulos/medidas-posicion/servicios/exportador-medidas-posicion";
+import {
+  manejarTeclaEntradaNumerica,
+  sanitizarTextoEntradaNumerica,
+} from "@/modulos/medidas-posicion/servicios/entrada-numerica-medidas-posicion";
 import { obtenerConfiguracionMedidaPosicion } from "@/modulos/medidas-posicion/servicios/configuraciones-medidas-posicion";
 import {
   ajustarMatriz,
@@ -24,6 +28,12 @@ const FILAS_INICIALES = 3;
 const COLUMNAS_INICIALES = 5;
 const MAX_FILAS_CAPTURA = 20;
 const MAX_COLUMNAS_CAPTURA = 20;
+const CONFIGURACION_CUARTIL =
+  obtenerConfiguracionMedidaPosicion("cuartiles").requiereCuantil!;
+const CONFIGURACION_DECIL =
+  obtenerConfiguracionMedidaPosicion("deciles").requiereCuantil!;
+const CONFIGURACION_PERCENTIL =
+  obtenerConfiguracionMedidaPosicion("percentiles").requiereCuantil!;
 
 interface MensajeEstado {
   tipo: "error" | "exito" | "info";
@@ -124,8 +134,14 @@ export function ModuloMedidaPosicion({
     "todos",
   );
   const [cantidadDecimales, setCantidadDecimales] = useState("4");
-  const [valorCuantil, setValorCuantil] = useState(
-    `${configuracion.requiereCuantil?.valorInicial ?? 1}`,
+  const [valorCuartil, setValorCuartil] = useState(
+    `${CONFIGURACION_CUARTIL.valorInicial}`,
+  );
+  const [valorDecil, setValorDecil] = useState(
+    `${CONFIGURACION_DECIL.valorInicial}`,
+  );
+  const [valorPercentil, setValorPercentil] = useState(
+    `${CONFIGURACION_PERCENTIL.valorInicial}`,
   );
   const [mensajeEstado, setMensajeEstado] = useState<MensajeEstado | null>(null);
   const [resultado, setResultado] =
@@ -144,15 +160,59 @@ export function ModuloMedidaPosicion({
     tipoDatos === "no-clasificados"
       ? configuracion.condicionesNoClasificados
       : configuracion.condicionesClasificados;
+  const controlesCuantiles =
+    medidaId === "medidas-posicion-todas"
+      ? [
+          {
+            clave: "cuartil",
+            configuracion: CONFIGURACION_CUARTIL,
+            valor: valorCuartil,
+            establecerValor: setValorCuartil,
+          },
+          {
+            clave: "decil",
+            configuracion: CONFIGURACION_DECIL,
+            valor: valorDecil,
+            establecerValor: setValorDecil,
+          },
+          {
+            clave: "percentil",
+            configuracion: CONFIGURACION_PERCENTIL,
+            valor: valorPercentil,
+            establecerValor: setValorPercentil,
+          },
+        ]
+      : configuracion.requiereCuantil
+        ? [
+            {
+              clave: configuracion.id,
+              configuracion: configuracion.requiereCuantil,
+              valor:
+                configuracion.id === "cuartiles"
+                  ? valorCuartil
+                  : configuracion.id === "deciles"
+                    ? valorDecil
+                    : valorPercentil,
+              establecerValor:
+                configuracion.id === "cuartiles"
+                  ? setValorCuartil
+                  : configuracion.id === "deciles"
+                    ? setValorDecil
+                    : setValorPercentil,
+            },
+          ]
+        : [];
 
   const opcionesSalida = {
     decimales:
       modoDecimales === "todos"
         ? ("todos" as const)
         : Math.min(10, Math.max(1, Number(cantidadDecimales || 1))),
-    valorCuantil: configuracion.requiereCuantil
-      ? Number(valorCuantil || configuracion.requiereCuantil.valorInicial)
-      : undefined,
+    valorCuartil: Number(valorCuartil || CONFIGURACION_CUARTIL.valorInicial),
+    valorDecil: Number(valorDecil || CONFIGURACION_DECIL.valorInicial),
+    valorPercentil: Number(
+      valorPercentil || CONFIGURACION_PERCENTIL.valorInicial,
+    ),
   };
 
   const actualizarDimensiones = (nuevasFilas: number, nuevasColumnas: number) => {
@@ -532,8 +592,22 @@ export function ModuloMedidaPosicion({
             <input
               type="number"
               min={1}
+              inputMode="numeric"
               value={numeroTabla}
-              onChange={(evento) => setNumeroTabla(evento.target.value)}
+              onKeyDown={(evento) =>
+                manejarTeclaEntradaNumerica(evento, {
+                  permitirNegativo: false,
+                  permitirDecimal: false,
+                })
+              }
+              onChange={(evento) =>
+                setNumeroTabla(
+                  sanitizarTextoEntradaNumerica(evento.target.value, {
+                    permitirNegativo: false,
+                    permitirDecimal: false,
+                  }),
+                )
+              }
               className="min-h-14 rounded-[1.15rem] border border-verde-claro bg-white px-4 text-[1.12rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"
             />
           </label>
@@ -575,28 +649,61 @@ export function ModuloMedidaPosicion({
               type="number"
               min={1}
               max={10}
+              inputMode="numeric"
               disabled={modoDecimales !== "fijos"}
               value={cantidadDecimales}
-              onChange={(evento) => setCantidadDecimales(evento.target.value)}
+              onKeyDown={(evento) =>
+                manejarTeclaEntradaNumerica(evento, {
+                  permitirNegativo: false,
+                  permitirDecimal: false,
+                })
+              }
+              onChange={(evento) =>
+                setCantidadDecimales(
+                  sanitizarTextoEntradaNumerica(evento.target.value, {
+                    permitirNegativo: false,
+                    permitirDecimal: false,
+                  }),
+                )
+              }
               className="min-h-14 rounded-[1.15rem] border border-verde-claro bg-white px-4 text-[1.12rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10 disabled:cursor-not-allowed disabled:bg-[#f3f4f1]"
             />
           </label>
 
-          {configuracion.requiereCuantil ? (
-            <label className="flex flex-col gap-2 xl:col-span-2">
+          {controlesCuantiles.map((control) => (
+            <label
+              key={control.clave}
+              className={`flex flex-col gap-2 ${
+                controlesCuantiles.length === 1 ? "xl:col-span-2" : ""
+              }`}
+            >
               <span className="text-[1.02rem] font-medium text-texto-secundario">
-                {configuracion.requiereCuantil.etiqueta}
+                {control.configuracion.etiqueta}
               </span>
               <input
                 type="number"
-                min={configuracion.requiereCuantil.minimo}
-                max={configuracion.requiereCuantil.maximo}
-                value={valorCuantil}
-                onChange={(evento) => setValorCuantil(evento.target.value)}
+                min={control.configuracion.minimo}
+                max={control.configuracion.maximo}
+                inputMode="numeric"
+                value={control.valor}
+                onKeyDown={(evento) =>
+                  manejarTeclaEntradaNumerica(evento, {
+                    permitirNegativo: false,
+                    permitirDecimal: false,
+                  })
+                }
+                onChange={(evento) =>
+                  control.establecerValor(
+                    sanitizarTextoEntradaNumerica(evento.target.value, {
+                      permitirNegativo: false,
+                      permitirDecimal: false,
+                    }),
+                  )
+                }
                 className="min-h-14 rounded-[1.15rem] border border-verde-claro bg-white px-4 text-[1.12rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"
               />
             </label>
-          ) : null}
+          ))}
         </div>
       </BloqueSeccion>
 

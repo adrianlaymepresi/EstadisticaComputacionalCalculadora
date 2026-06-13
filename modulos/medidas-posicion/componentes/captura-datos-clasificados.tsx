@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  manejarTeclaEntradaNumerica,
+  sanitizarTextoEntradaNumerica,
+} from "@/modulos/medidas-posicion/servicios/entrada-numerica-medidas-posicion";
 import type { FilaTablaClasificadaEntrada } from "@/modulos/medidas-posicion/tipos";
 
 interface CapturaDatosClasificadosProps {
@@ -45,6 +49,8 @@ export function CapturaDatosClasificados({
         <span className="font-semibold text-texto-principal">
           {ejemplo.map((fila) => `[${fila.li}, ${fila.ls}, ${fila.fi}]`).join(" | ")}
         </span>
+        . Li y Ls aceptan numeros con signo y decimales; fi solo admite enteros
+        no negativos.
       </div>
 
       <div className="overflow-auto rounded-[1.55rem] border border-verde-claro">
@@ -68,8 +74,22 @@ export function CapturaDatosClasificados({
                   <input
                     type="text"
                     value={fila.li}
+                    inputMode="decimal"
+                    onKeyDown={(evento) =>
+                      manejarTeclaEntradaNumerica(evento, {
+                        permitirNegativo: true,
+                        permitirDecimal: true,
+                      })
+                    }
                     onChange={(evento) =>
-                      onActualizarFila(indice, "li", evento.target.value)
+                      onActualizarFila(
+                        indice,
+                        "li",
+                        sanitizarTextoEntradaNumerica(evento.target.value, {
+                          permitirNegativo: true,
+                          permitirDecimal: true,
+                        }),
+                      )
                     }
                     className="min-h-12 w-full rounded-[0.95rem] border border-[#d6e2d6] bg-white px-3 text-[1rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"
                     placeholder="Li"
@@ -79,8 +99,22 @@ export function CapturaDatosClasificados({
                   <input
                     type="text"
                     value={fila.ls}
+                    inputMode="decimal"
+                    onKeyDown={(evento) =>
+                      manejarTeclaEntradaNumerica(evento, {
+                        permitirNegativo: true,
+                        permitirDecimal: true,
+                      })
+                    }
                     onChange={(evento) =>
-                      onActualizarFila(indice, "ls", evento.target.value)
+                      onActualizarFila(
+                        indice,
+                        "ls",
+                        sanitizarTextoEntradaNumerica(evento.target.value, {
+                          permitirNegativo: true,
+                          permitirDecimal: true,
+                        }),
+                      )
                     }
                     className="min-h-12 w-full rounded-[0.95rem] border border-[#d6e2d6] bg-white px-3 text-[1rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"
                     placeholder="Ls"
@@ -90,8 +124,22 @@ export function CapturaDatosClasificados({
                   <input
                     type="text"
                     value={fila.fi}
+                    inputMode="numeric"
+                    onKeyDown={(evento) =>
+                      manejarTeclaEntradaNumerica(evento, {
+                        permitirNegativo: false,
+                        permitirDecimal: false,
+                      })
+                    }
                     onChange={(evento) =>
-                      onActualizarFila(indice, "fi", evento.target.value)
+                      onActualizarFila(
+                        indice,
+                        "fi",
+                        sanitizarTextoEntradaNumerica(evento.target.value, {
+                          permitirNegativo: false,
+                          permitirDecimal: false,
+                        }),
+                      )
                     }
                     className="min-h-12 w-full rounded-[0.95rem] border border-[#d6e2d6] bg-white px-3 text-[1rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"
                     placeholder="fi"

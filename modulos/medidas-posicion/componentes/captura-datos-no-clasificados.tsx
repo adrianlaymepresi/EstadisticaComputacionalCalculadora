@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  manejarTeclaEntradaNumerica,
+  sanitizarTextoEntradaNumerica,
+} from "@/modulos/medidas-posicion/servicios/entrada-numerica-medidas-posicion";
+
 interface CapturaDatosNoClasificadosProps {
   filasCaptura: number;
   columnasCaptura: number;
@@ -35,7 +40,23 @@ function CampoControl({
         min={1}
         max={20}
         value={valor}
-        onChange={(evento) => onChange(Number(evento.target.value || 1))}
+        inputMode="numeric"
+        onKeyDown={(evento) =>
+          manejarTeclaEntradaNumerica(evento, {
+            permitirNegativo: false,
+            permitirDecimal: false,
+          })
+        }
+        onChange={(evento) =>
+          onChange(
+            Number(
+              sanitizarTextoEntradaNumerica(evento.target.value, {
+                permitirNegativo: false,
+                permitirDecimal: false,
+              }) || 1,
+            ),
+          )
+        }
         className="min-h-14 rounded-[1.15rem] border border-verde-claro bg-white px-4 text-[1.12rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"
       />
     </label>
@@ -63,7 +84,10 @@ export function CapturaDatosNoClasificados({
     >
       <div className="rounded-[1.4rem] border border-verde-claro bg-[#f9fbf7] p-4 text-sm leading-7 text-texto-secundario">
         Ingresa datos numericos en la tabla o pega valores desde Excel, Word o
-        una lista como: <span className="font-semibold text-texto-principal">{ejemplo}</span>
+        una lista como:{" "}
+        <span className="font-semibold text-texto-principal">{ejemplo}</span>.{" "}
+        Solo se aceptan numeros, signo negativo opcional y decimales con punto
+        o coma.
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -92,11 +116,21 @@ export function CapturaDatosNoClasificados({
                     <input
                       type="text"
                       value={celda}
+                      inputMode="decimal"
+                      onKeyDown={(evento) =>
+                        manejarTeclaEntradaNumerica(evento, {
+                          permitirNegativo: true,
+                          permitirDecimal: true,
+                        })
+                      }
                       onChange={(evento) =>
                         onActualizarCelda(
                           indiceFila,
                           indiceColumna,
-                          evento.target.value,
+                          sanitizarTextoEntradaNumerica(evento.target.value, {
+                            permitirNegativo: true,
+                            permitirDecimal: true,
+                          }),
                         )
                       }
                       className="min-h-12 w-full rounded-[0.95rem] border border-[#d6e2d6] bg-white px-3 text-[1rem] text-texto-principal outline-none transition focus:border-acento-principal focus:ring-2 focus:ring-acento-principal/10"

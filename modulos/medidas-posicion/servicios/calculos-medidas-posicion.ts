@@ -82,6 +82,22 @@ function obtenerValorCuantilValido(
   return valor;
 }
 
+function obtenerValorCuantilSegunMedida(
+  medidaId: "cuartiles" | "deciles" | "percentiles",
+  opcionesSalida: OpcionesSalidaMedidaPosicion,
+) {
+  switch (medidaId) {
+    case "cuartiles":
+      return opcionesSalida.valorCuartil ?? opcionesSalida.valorCuantil;
+    case "deciles":
+      return opcionesSalida.valorDecil ?? opcionesSalida.valorCuantil;
+    case "percentiles":
+      return opcionesSalida.valorPercentil ?? opcionesSalida.valorCuantil;
+    default:
+      return opcionesSalida.valorCuantil;
+  }
+}
+
 function obtenerEtiquetaResultadoCuantil(
   medidaId: IdentificadorMedidaPosicion,
   valorCuantil?: number,
@@ -138,7 +154,7 @@ function validarDatosClasificados(
 
   if (
     (medidaId === "media-geometrica" || medidaId === "media-armonica") &&
-    tablaExtendida.filas.some((fila) => fila.xi <= 0)
+    tablaExtendida.filas.some((fila) => fila.fi > 0 && fila.xi <= 0)
   ) {
     throw new Error(
       medidaId === "media-geometrica"
@@ -148,6 +164,12 @@ function validarDatosClasificados(
   }
 
   return tablaExtendida;
+}
+
+function obtenerFilasConFrecuenciaPositiva(
+  tablaExtendida: TablaClasificadaExtendida,
+) {
+  return tablaExtendida.filas.filter((fila) => fila.fi > 0);
 }
 
 function tablaExtendidaBase(
@@ -278,6 +300,12 @@ function calcularMediaGeometricaNoClasificada(
   datos: number[],
   opcionesSalida: OpcionesSalidaMedidaPosicion,
 ) {
+  if (datos.some((valor) => valor <= 0)) {
+    throw new Error(
+      "La media geometrica carece de sentido para datos negativos o nulos. Todos los valores deben ser mayores que cero.",
+    );
+  }
+
   const sumaLogaritmos = datos.reduce(
     (acumulado, valor) => acumulado + Math.log(valor),
     0,
@@ -323,7 +351,15 @@ function calcularMediaGeometricaClasificada(
   tablaExtendida: TablaClasificadaExtendida,
   opcionesSalida: OpcionesSalidaMedidaPosicion,
 ) {
-  const sumaFiLogXi = tablaExtendida.filas.reduce(
+  const filasConFrecuencia = obtenerFilasConFrecuenciaPositiva(tablaExtendida);
+
+  if (filasConFrecuencia.some((fila) => fila.xi <= 0)) {
+    throw new Error(
+      "La media geometrica clasificada requiere marcas de clase mayores que cero cuando la frecuencia es positiva.",
+    );
+  }
+
+  const sumaFiLogXi = filasConFrecuencia.reduce(
     (acumulado, fila) => acumulado + fila.fi * Math.log(fila.xi),
     0,
   );
@@ -364,8 +400,12 @@ function calcularMediaGeometricaClasificada(
             ),
             formatearNumeroCompacto(fila.xi),
             fila.fi,
-            formatearNumeroCompacto(Math.log(fila.xi)),
-            formatearNumeroCompacto(fila.fi * Math.log(fila.xi)),
+            fila.fi > 0
+              ? formatearNumeroCompacto(Math.log(fila.xi))
+              : "No aporta",
+            fila.fi > 0
+              ? formatearNumeroCompacto(fila.fi * Math.log(fila.xi))
+              : "0",
           ]),
         ),
         tablaExtendidaBase(tablaExtendida),
@@ -378,6 +418,12 @@ function calcularMediaArmonicaNoClasificada(
   datos: number[],
   opcionesSalida: OpcionesSalidaMedidaPosicion,
 ) {
+  if (datos.some((valor) => valor <= 0)) {
+    throw new Error(
+      "La media armonica requiere valores mayores que cero para evitar divisiones invalidas.",
+    );
+  }
+
   const sumaInversos = datos.reduce((acumulado, valor) => acumulado + 1 / valor, 0);
   const media = datos.length / sumaInversos;
 
@@ -420,7 +466,15 @@ function calcularMediaArmonicaClasificada(
   tablaExtendida: TablaClasificadaExtendida,
   opcionesSalida: OpcionesSalidaMedidaPosicion,
 ) {
-  const sumaFiEntreXi = tablaExtendida.filas.reduce(
+  const filasConFrecuencia = obtenerFilasConFrecuenciaPositiva(tablaExtendida);
+
+  if (filasConFrecuencia.some((fila) => fila.xi <= 0)) {
+    throw new Error(
+      "La media armonica clasificada requiere marcas de clase mayores que cero cuando la frecuencia es positiva.",
+    );
+  }
+
+  const sumaFiEntreXi = filasConFrecuencia.reduce(
     (acumulado, fila) => acumulado + fila.fi / fila.xi,
     0,
   );
@@ -461,7 +515,9 @@ function calcularMediaArmonicaClasificada(
             ),
             formatearNumeroCompacto(fila.xi),
             fila.fi,
-            formatearNumeroCompacto(fila.fi / fila.xi),
+            fila.fi > 0
+              ? formatearNumeroCompacto(fila.fi / fila.xi)
+              : "0",
           ]),
         ),
         tablaExtendidaBase(tablaExtendida),
@@ -747,12 +803,48 @@ function interpolarEnDatosOrdenados(
   datosOrdenados: number[],
   posicion: number,
 ) {
+  const cantidadDatos = datosOrdenados.length;
+
+  if (cantidadDatos === 0) {
+    throw new Error("No existen datos ordenados para interpolar.");
+  }
+
+  if (posicion <= 1) {
+    return {
+      valor: datosOrdenados[0],
+      esInterpolado: false,
+      indiceInferior: 1,
+      indiceSuperior: 1,
+      valorInferior: datosOrdenados[0],
+      valorSuperior: datosOrdenados[0],
+      fraccion: 0,
+      tipoAjuste: "limite-inferior" as const,
+    };
+  }
+
+  if (posicion >= cantidadDatos) {
+    return {
+      valor: datosOrdenados[cantidadDatos - 1],
+      esInterpolado: false,
+      indiceInferior: cantidadDatos,
+      indiceSuperior: cantidadDatos,
+      valorInferior: datosOrdenados[cantidadDatos - 1],
+      valorSuperior: datosOrdenados[cantidadDatos - 1],
+      fraccion: 0,
+      tipoAjuste: "limite-superior" as const,
+    };
+  }
+
   if (Number.isInteger(posicion)) {
     return {
       valor: datosOrdenados[posicion - 1],
       esInterpolado: false,
       indiceInferior: posicion,
       indiceSuperior: posicion,
+      valorInferior: datosOrdenados[posicion - 1],
+      valorSuperior: datosOrdenados[posicion - 1],
+      fraccion: 0,
+      tipoAjuste: "exacto" as const,
     };
   }
 
@@ -769,6 +861,10 @@ function interpolarEnDatosOrdenados(
     esInterpolado: true,
     indiceInferior,
     indiceSuperior,
+    valorInferior,
+    valorSuperior,
+    fraccion,
+    tipoAjuste: "interpolado" as const,
   };
 }
 
@@ -779,7 +875,7 @@ function calcularCuantilNoClasificado(
 ) {
   const valorCuantil = obtenerValorCuantilValido(
     medidaId,
-    opcionesSalida.valorCuantil,
+    obtenerValorCuantilSegunMedida(medidaId, opcionesSalida),
   ) as number;
   const divisor = medidaId === "cuartiles" ? 4 : medidaId === "deciles" ? 10 : 100;
   const posicion = (valorCuantil * (datosOrdenados.length + 1)) / divisor;
@@ -789,6 +885,9 @@ function calcularCuantilNoClasificado(
     interpolacion.valor,
     opcionesSalida.decimales,
   );
+  const textoPosicion = formatearNumeroCompacto(posicion);
+  const textoValorInferior = formatearNumeroCompacto(interpolacion.valorInferior);
+  const textoValorSuperior = formatearNumeroCompacto(interpolacion.valorSuperior);
 
   return {
     valor: interpolacion.valor,
@@ -796,22 +895,39 @@ function calcularCuantilNoClasificado(
       medidaId,
       "no-clasificados",
       textoResultado,
-      interpolacion.esInterpolado
-        ? "La posicion no fue entera, por eso se aplico interpolacion lineal."
-        : "La posicion fue entera y se tomo directamente el dato ordenado.",
+      interpolacion.tipoAjuste === "interpolado"
+        ? "La posicion no fue entera, por eso se aplico interpolacion lineal dentro del rango de los datos ordenados."
+        : interpolacion.tipoAjuste === "limite-inferior"
+          ? "La posicion calculada quedo antes del primer dato, por eso se tomo el limite inferior observado."
+          : interpolacion.tipoAjuste === "limite-superior"
+            ? "La posicion calculada supero el ultimo dato, por eso se tomo el limite superior observado."
+            : "La posicion fue entera y se tomo directamente el dato ordenado.",
       `${etiqueta} vale ${textoResultado}.`,
       [
         { titulo: "Numero de datos", expresion: `n = ${datosOrdenados.length}` },
         {
           titulo: "Posicion del cuantil",
-          expresion: `${etiqueta} posicion = ${valorCuantil} * (${datosOrdenados.length} + 1) / ${divisor} = ${formatearNumeroCompacto(posicion)}`,
+          expresion: `${etiqueta} posicion = ${valorCuantil} * (${datosOrdenados.length} + 1) / ${divisor} = ${textoPosicion}`,
         },
-        interpolacion.esInterpolado
+        interpolacion.tipoAjuste === "interpolado"
           ? {
               titulo: "Interpolacion lineal",
-              expresion: `Entre las posiciones ${interpolacion.indiceInferior} y ${interpolacion.indiceSuperior}`,
+              expresion: `${etiqueta} = ${textoValorInferior} + ${formatearNumeroCompacto(interpolacion.fraccion)} * (${textoValorSuperior} - ${textoValorInferior})`,
+              descripcion: `Se interpola entre las posiciones ${interpolacion.indiceInferior} y ${interpolacion.indiceSuperior}, por lo que el resultado queda dentro del rango [${textoValorInferior}, ${textoValorSuperior}].`,
               resultado: textoResultado,
             }
+          : interpolacion.tipoAjuste === "limite-inferior"
+            ? {
+                titulo: "Ajuste al limite inferior",
+                expresion: `La posicion ${textoPosicion} es menor o igual que 1, entonces se toma el primer dato ordenado.`,
+                resultado: textoResultado,
+              }
+            : interpolacion.tipoAjuste === "limite-superior"
+              ? {
+                  titulo: "Ajuste al limite superior",
+                  expresion: `La posicion ${textoPosicion} es mayor o igual que ${datosOrdenados.length}, entonces se toma el ultimo dato ordenado.`,
+                  resultado: textoResultado,
+                }
           : {
               titulo: "Dato exacto",
               expresion: `Posicion ${interpolacion.indiceInferior}`,
@@ -838,6 +954,16 @@ function measureIdMap(
   return medidaId;
 }
 
+function esMedidaCuantil(
+  medidaId: Exclude<IdentificadorMedidaPosicion, "medidas-posicion-todas">,
+): medidaId is "cuartiles" | "deciles" | "percentiles" {
+  return (
+    medidaId === "cuartiles" ||
+    medidaId === "deciles" ||
+    medidaId === "percentiles"
+  );
+}
+
 function calcularCuantilClasificado(
   medidaId: "cuartiles" | "deciles" | "percentiles",
   tablaExtendida: TablaClasificadaExtendida,
@@ -845,13 +971,14 @@ function calcularCuantilClasificado(
 ) {
   const valorCuantil = obtenerValorCuantilValido(
     medidaId,
-    opcionesSalida.valorCuantil,
+    obtenerValorCuantilSegunMedida(medidaId, opcionesSalida),
   ) as number;
   const divisor = medidaId === "cuartiles" ? 4 : medidaId === "deciles" ? 10 : 100;
   const clave = (valorCuantil * tablaExtendida.n) / divisor;
   const { fila, FiAnterior } = obtenerFilaPorClave(tablaExtendida, clave);
-  const resultado =
+  const resultadoSinAjuste =
     fila.Li + (((clave - FiAnterior) * fila.amplitud) / fila.fi);
+  const resultado = Math.min(fila.Ls, Math.max(fila.Li, resultadoSinAjuste));
   const etiqueta = obtenerEtiquetaResultadoCuantil(measureIdMap(medidaId), valorCuantil);
 
   return {
@@ -1014,13 +1141,16 @@ function calcularResumenTodosNoClasificados(
   ];
 
   const resumen: ResultadoResumenTodos[] = medidas.map((medidaId) => {
+    const etiquetaMedida = esMedidaCuantil(medidaId)
+      ? obtenerEtiquetaResultadoCuantil(
+          measureIdMap(medidaId),
+          obtenerValorCuantilSegunMedida(medidaId, opcionesSalida),
+        )
+      : obtenerConfiguracionMedidaPosicion(medidaId).titulo;
+
     try {
       const opcionesAjustadas: OpcionesSalidaMedidaPosicion = {
         ...opcionesSalida,
-        valorCuantil:
-          opcionesSalida.valorCuantil ??
-          obtenerConfiguracionMedidaPosicion(medidaId).requiereCuantil
-            ?.valorInicial,
       };
       const resultado = obtenerCalculadoresNoClasificados(
         datosIngresados,
@@ -1030,21 +1160,13 @@ function calcularResumenTodosNoClasificados(
       ).detalle;
 
       return {
-        medida:
-          medidaId === "cuartiles" ||
-          medidaId === "deciles" ||
-          medidaId === "percentiles"
-            ? obtenerEtiquetaResultadoCuantil(
-                measureIdMap(medidaId),
-                opcionesAjustadas.valorCuantil,
-              )
-            : resultado.titulo,
+        medida: esMedidaCuantil(medidaId) ? etiquetaMedida : resultado.titulo,
         resultado: resultado.valorPrincipal,
         observacion: resultado.observacion,
       };
     } catch (error) {
       return {
-        medida: obtenerConfiguracionMedidaPosicion(medidaId).titulo,
+        medida: etiquetaMedida,
         resultado: "No disponible",
         observacion:
           error instanceof Error
@@ -1088,13 +1210,16 @@ function calcularResumenTodosClasificados(
   ];
 
   const resumen: ResultadoResumenTodos[] = medidas.map((medidaId) => {
+    const etiquetaMedida = esMedidaCuantil(medidaId)
+      ? obtenerEtiquetaResultadoCuantil(
+          measureIdMap(medidaId),
+          obtenerValorCuantilSegunMedida(medidaId, opcionesSalida),
+        )
+      : obtenerConfiguracionMedidaPosicion(medidaId).titulo;
+
     try {
       const opcionesAjustadas: OpcionesSalidaMedidaPosicion = {
         ...opcionesSalida,
-        valorCuantil:
-          opcionesSalida.valorCuantil ??
-          obtenerConfiguracionMedidaPosicion(medidaId).requiereCuantil
-            ?.valorInicial,
       };
       const resultado = obtenerCalculadoresClasificados(
         tablaExtendida,
@@ -1103,21 +1228,13 @@ function calcularResumenTodosClasificados(
       ).detalle;
 
       return {
-        medida:
-          medidaId === "cuartiles" ||
-          medidaId === "deciles" ||
-          medidaId === "percentiles"
-            ? obtenerEtiquetaResultadoCuantil(
-                measureIdMap(medidaId),
-                opcionesAjustadas.valorCuantil,
-              )
-            : resultado.titulo,
+        medida: esMedidaCuantil(medidaId) ? etiquetaMedida : resultado.titulo,
         resultado: resultado.valorPrincipal,
         observacion: resultado.observacion,
       };
     } catch (error) {
       return {
-        medida: obtenerConfiguracionMedidaPosicion(medidaId).titulo,
+        medida: etiquetaMedida,
         resultado: "No disponible",
         observacion:
           error instanceof Error

@@ -9,11 +9,13 @@ import { ModuloDiagramaLineal } from "@/modulos/diagrama-lineal/componentes/modu
 import { ModuloDiagramaPictogramas } from "@/modulos/diagrama-pictogramas/componentes/modulo-diagrama-pictogramas";
 import { ModuloDiagramaBurbujas } from "@/modulos/diagrama-burbujas/componentes/modulo-diagrama-burbujas";
 import { ModuloFormulaTema1 } from "@/modulos/formulas-tema-1/componentes/modulo-formula-tema-1";
+import { ModuloFormulaSegundoParcial } from "@/modulos/formulas-segundo-parcial/componentes/modulo-formula-segundo-parcial";
 import { ModuloMedidaPosicion } from "@/modulos/medidas-posicion/componentes/modulo-medida-posicion";
 import { ModuloMetodoMaximoEntero } from "@/modulos/metodo-maximo-entero/componentes/modulo-metodo-maximo-entero";
 import { ModuloMetodoSimpleInspeccion } from "@/modulos/metodo-simple-inspeccion/componentes/modulo-metodo-simple-inspeccion";
 import { ModuloMetodoSturges } from "@/modulos/metodo-sturges/componentes/modulo-metodo-sturges";
 import type { IdentificadorFormulaTema1 } from "@/modulos/formulas-tema-1/tipos";
+import type { IdentificadorFormulaSegundoParcial } from "@/modulos/formulas-segundo-parcial/tipos";
 import type { IdentificadorMedidaPosicion } from "@/modulos/medidas-posicion/tipos";
 
 interface ContenidoTarjetaUnidadProps {
@@ -75,6 +77,25 @@ function esFormulaTema1(
   );
 }
 
+function esFormulaSegundoParcial(
+  herramientaId: TarjetaUnidad["herramientaId"],
+): herramientaId is IdentificadorFormulaSegundoParcial {
+  return (
+    herramientaId === "permutacion-lineal" ||
+    herramientaId === "permutacion-con-repeticion" ||
+    herramientaId === "permutacion-circular" ||
+    herramientaId === "variacion-sin-repeticion" ||
+    herramientaId === "variacion-con-repeticion" ||
+    herramientaId === "combinacion" ||
+    herramientaId === "distribucion-binomial" ||
+    herramientaId === "distribucion-geometrica" ||
+    herramientaId === "distribucion-pascal" ||
+    herramientaId === "distribucion-hipergeometrica" ||
+    herramientaId === "distribucion-poisson" ||
+    herramientaId === "complementos-acumulaciones"
+  );
+}
+
 function esMedidaPosicion(
   herramientaId: TarjetaUnidad["herramientaId"],
 ): herramientaId is IdentificadorMedidaPosicion {
@@ -109,6 +130,11 @@ export function ContenidoTarjetaUnidad({
 
       {esFormulaTema1(tarjeta.herramientaId) ? (
         <ModuloFormulaTema1
+          key={tarjeta.herramientaId}
+          formulaId={tarjeta.herramientaId}
+        />
+      ) : esFormulaSegundoParcial(tarjeta.herramientaId) ? (
+        <ModuloFormulaSegundoParcial
           key={tarjeta.herramientaId}
           formulaId={tarjeta.herramientaId}
         />

@@ -1,4 +1,5 @@
 import { tarjetasFormulaTema1 } from "@/modulos/formulas-tema-1/servicios/configuraciones-formulas";
+import { tarjetasFormulaSegundoParcial } from "@/modulos/formulas-segundo-parcial/services/configuraciones-formulas-segundo-parcial";
 import { tarjetasMedidasPosicion } from "@/modulos/medidas-posicion/servicios/configuraciones-medidas-posicion";
 
 export type EstadoTarjeta = "disponible" | "proximamente";
@@ -10,6 +11,18 @@ export type IdentificadorHerramienta =
   | "formula-porcentaje-cambio"
   | "formula-porcentaje-error"
   | "formula-tasa"
+  | "permutacion-lineal"
+  | "permutacion-con-repeticion"
+  | "permutacion-circular"
+  | "variacion-sin-repeticion"
+  | "variacion-con-repeticion"
+  | "combinacion"
+  | "distribucion-binomial"
+  | "distribucion-geometrica"
+  | "distribucion-pascal"
+  | "distribucion-hipergeometrica"
+  | "distribucion-poisson"
+  | "complementos-acumulaciones"
   | "distribucion-arbitraria"
   | "metodo-sturges"
   | "metodo-maximo-entero"
@@ -67,6 +80,20 @@ const tarjetasUnidadFormulas: TarjetaUnidad[] = tarjetasFormulaTema1.map(
     herramientaId: tarjeta.id,
   }),
 );
+
+const tarjetasUnidadSegundoParcial: TarjetaUnidad[] =
+  tarjetasFormulaSegundoParcial.map((tarjeta) => ({
+    id: tarjeta.id,
+    titulo: tarjeta.titulo,
+    resumen: tarjeta.resumen,
+    etiqueta: "Disponible ahora",
+    descripcionTrabajo:
+      "Muestra la formula, explica las variables, valida los datos de entrada y desarrolla el procedimiento hasta el resultado final.",
+    nota: "Incluye interpretacion generica, control de precision y acumulaciones cuando la distribucion lo requiere.",
+    estado: "disponible",
+    palabrasClave: tarjeta.palabrasClave,
+    herramientaId: tarjeta.id,
+  }));
 
 export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
   {
@@ -187,6 +214,24 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       "percentiles",
     ],
     tarjetas: tarjetasMedidasPosicion,
+  },
+  {
+    id: "unidad-2-1",
+    titulo: "Unidad 2.1",
+    subtitulo: "Combinatoria y distribuciones",
+    descripcion:
+      "Permutaciones, variaciones, combinaciones y distribuciones discretas del segundo parcial con procedimiento paso a paso.",
+    palabrasClave: [
+      "unidad 2.1",
+      "segundo parcial",
+      "combinatoria",
+      "binomial",
+      "poisson",
+      "hipergeometrica",
+      "pascal",
+      "geometrica",
+    ],
+    tarjetas: tarjetasUnidadSegundoParcial,
   },
   {
     id: "unidad-1-2-2",

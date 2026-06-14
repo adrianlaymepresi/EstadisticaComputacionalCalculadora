@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { normalizarNombreArchivo } from "@/modulos/diagrama-burbujas/servicios/exportador";
 import { parsearDatosTabla } from "@/modulos/diagrama-burbujas/utilidades/validaciones";
 import { calcularDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/servicios/calculos-distribucion-arbitraria";
+import { ResumenMedidasPosicionGeneradas } from "@/modulos/medidas-posicion/componentes/resumen-medidas-posicion-generadas";
 import { contarDecimalesSignificativos } from "@/modulos/tablas-estadisticas/utilidades/precision-numerica";
 import type {
   DireccionRedondeo,
@@ -367,6 +368,27 @@ export function ModuloTablaEstadisticaAgrupada({
   const [exportandoExcel, setExportandoExcel] = useState(false);
 
   const datosCapturados = matrizDatos.flat().filter((valor) => valor.trim() !== "");
+  const filasClasificadasParaMedidas = useMemo(
+    () =>
+      resultado
+        ? resultado.intervalos.map((intervalo) => ({
+            li: formatearNumeroFijo(
+              intervalo.limiteInferior,
+              Math.max(resultado.precision, 0),
+            ),
+            ls: formatearNumeroFijo(
+              intervalo.limiteSuperior,
+              Math.max(resultado.precision, 0),
+            ),
+            fi: `${intervalo.fi}`,
+          }))
+        : [],
+    [resultado],
+  );
+  const claveResumenMedidas = useMemo(
+    () => JSON.stringify(filasClasificadasParaMedidas),
+    [filasClasificadasParaMedidas],
+  );
 
   const actualizarDimensiones = (
     nuevasFilas: number,
@@ -1331,7 +1353,18 @@ export function ModuloTablaEstadisticaAgrupada({
           </BloqueModulo>
 
           <BloqueModulo
-            titulo="7. Recalculo manual"
+            titulo="7. Medidas de posicion"
+            descripcion="Este bloque usa la tabla clasificada ya construida para calcular media, mediana, moda y cuantiles agrupados. Por defecto se muestran Q2, D5 y P50, y puedes recalcular solo este resumen cuando lo necesites."
+          >
+            <ResumenMedidasPosicionGeneradas
+              key={claveResumenMedidas}
+              tipoDatos="clasificados"
+              filasClasificadas={filasClasificadasParaMedidas}
+            />
+          </BloqueModulo>
+
+          <BloqueModulo
+            titulo="8. Recalculo manual"
             descripcion={
               esMetodoArbitrario
                 ? "Modifica k, elige como redondear t y redistribuye el excedente dentro del rango permitido antes de recalcular."
@@ -1465,7 +1498,7 @@ export function ModuloTablaEstadisticaAgrupada({
       ) : null}
 
       <BloqueModulo
-        titulo="8. Exportacion"
+        titulo="9. Exportacion"
         descripcion="Exporta los datos originales, el resumen de calculos y la tabla estadistica en un archivo Excel."
       >
         <div>

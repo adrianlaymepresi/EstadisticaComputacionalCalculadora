@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { normalizarNombreArchivo } from "@/modulos/diagrama-burbujas/servicios/exportador";
 import { parsearDatosTabla } from "@/modulos/diagrama-burbujas/utilidades/validaciones";
+import { ResumenMedidasPosicionGeneradas } from "@/modulos/medidas-posicion/componentes/resumen-medidas-posicion-generadas";
 import { calcularMetodoSimpleInspeccion } from "@/modulos/metodo-simple-inspeccion/servicios/calculos-simple-inspeccion";
 import {
   exportarExcelSimpleInspeccion,
@@ -150,6 +151,21 @@ export function ModuloMetodoSimpleInspeccion() {
   const [exportandoExcel, setExportandoExcel] = useState(false);
 
   const datosCapturados = matrizDatos.flat().filter((valor) => valor.trim() !== "");
+  const matrizParaMedidas = useMemo(
+    () =>
+      resultado?.todosSonNumericos
+        ? [
+            resultado.filas.flatMap((fila) =>
+              Array.from({ length: fila.fi }, () => fila.valor),
+            ),
+          ]
+        : [],
+    [resultado],
+  );
+  const claveResumenMedidas = useMemo(
+    () => JSON.stringify(matrizParaMedidas),
+    [matrizParaMedidas],
+  );
 
   const actualizarDimensiones = (
     nuevasFilas: number,
@@ -562,8 +578,28 @@ export function ModuloMetodoSimpleInspeccion() {
         </BloqueModulo>
       ) : null}
 
+      {resultado ? (
+        <BloqueModulo
+          titulo="3. Medidas de posicion"
+          descripcion="Cuando los valores de esta tabla son numericos, aqui puedes obtener el resumen completo de medidas de posicion usando los datos ya construidos por simple inspeccion."
+        >
+          {resultado.todosSonNumericos ? (
+            <ResumenMedidasPosicionGeneradas
+              key={claveResumenMedidas}
+              tipoDatos="no-clasificados"
+              matrizNoClasificada={matrizParaMedidas}
+            />
+          ) : (
+            <div className="rounded-[1.4rem] border border-acento-principal/15 bg-acento-principal/8 p-4 text-sm leading-7 text-acento-principal">
+              Este resumen solo se habilita cuando la tabla de simple inspeccion
+              fue construida con datos numericos.
+            </div>
+          )}
+        </BloqueModulo>
+      ) : null}
+
       <BloqueModulo
-        titulo="3. Exportacion"
+        titulo="4. Exportacion"
         descripcion="Exporta los datos originales y la tabla estadistica de simple inspeccion en un archivo Excel."
       >
         <div>

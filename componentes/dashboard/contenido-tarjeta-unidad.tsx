@@ -15,9 +15,11 @@ import { ModuloMedidaPosicion } from "@/modulos/medidas-posicion/componentes/mod
 import { ModuloMetodoMaximoEntero } from "@/modulos/metodo-maximo-entero/componentes/modulo-metodo-maximo-entero";
 import { ModuloMetodoSimpleInspeccion } from "@/modulos/metodo-simple-inspeccion/componentes/modulo-metodo-simple-inspeccion";
 import { ModuloMetodoSturges } from "@/modulos/metodo-sturges/componentes/modulo-metodo-sturges";
+import { ModuloRegresion } from "@/modulos/regresiones/componentes/modulo-regresion";
 import type { IdentificadorFormulaTema1 } from "@/modulos/formulas-tema-1/tipos";
 import type { IdentificadorFormulaSegundoParcial } from "@/modulos/formulas-segundo-parcial/tipos";
 import type { IdentificadorMedidaPosicion } from "@/modulos/medidas-posicion/tipos";
+import type { IdentificadorRegresion } from "@/modulos/regresiones/tipos";
 
 interface ContenidoTarjetaUnidadProps {
   unidadTitulo: string;
@@ -113,6 +115,17 @@ function esMedidaPosicion(
   );
 }
 
+function esRegresion(
+  herramientaId: TarjetaUnidad["herramientaId"],
+): herramientaId is IdentificadorRegresion {
+  return (
+    herramientaId === "regresion-lineal-simple" ||
+    herramientaId === "regresion-cuadratica" ||
+    herramientaId === "regresion-exponencial" ||
+    herramientaId === "regresion-potencial"
+  );
+}
+
 export function ContenidoTarjetaUnidad({
   unidadTitulo,
   tarjeta,
@@ -143,6 +156,11 @@ export function ContenidoTarjetaUnidad({
         <ModuloMedidaPosicion
           key={tarjeta.herramientaId}
           medidaId={tarjeta.herramientaId}
+        />
+      ) : esRegresion(tarjeta.herramientaId) ? (
+        <ModuloRegresion
+          key={tarjeta.herramientaId}
+          regresionId={tarjeta.herramientaId}
         />
       ) : tarjeta.herramientaId === "arbol-problemas" ? (
         <ModuloArbolProblemas key={tarjeta.id} />

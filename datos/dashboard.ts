@@ -1,6 +1,7 @@
 import { tarjetasFormulaTema1 } from "@/modulos/formulas-tema-1/servicios/configuraciones-formulas";
 import { tarjetasFormulaSegundoParcial } from "@/modulos/formulas-segundo-parcial/services/configuraciones-formulas-segundo-parcial";
 import { tarjetasMedidasPosicion } from "@/modulos/medidas-posicion/servicios/configuraciones-medidas-posicion";
+import { configuracionesRegresiones } from "@/modulos/regresiones/servicios/configuraciones-regresiones";
 
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
@@ -44,7 +45,11 @@ export type IdentificadorHerramienta =
   | "diagrama-bastones"
   | "diagrama-pictogramas"
   | "diagrama-dispersion"
-  | "diagrama-lineal";
+  | "diagrama-lineal"
+  | "regresion-lineal-simple"
+  | "regresion-cuadratica"
+  | "regresion-exponencial"
+  | "regresion-potencial";
 
 export interface TarjetaUnidad {
   id: string;
@@ -95,6 +100,21 @@ const tarjetasUnidadSegundoParcial: TarjetaUnidad[] =
     palabrasClave: tarjeta.palabrasClave,
     herramientaId: tarjeta.id,
   }));
+
+const tarjetasUnidadRegresiones: TarjetaUnidad[] = configuracionesRegresiones.map(
+  (tarjeta) => ({
+    id: tarjeta.id,
+    titulo: tarjeta.titulo,
+    resumen: tarjeta.resumen,
+    etiqueta: "Disponible ahora",
+    descripcionTrabajo:
+      "Abre un modulo completo con explicacion, formula, datos X-Y, pegado desde Excel, procedimiento, ecuacion final, estimaciones, interpretacion y grafica.",
+    nota: "Mantiene precision configurable para proceso y resultado, y reutiliza la exportacion a Excel con la grafica final.",
+    estado: "disponible",
+    palabrasClave: tarjeta.palabrasClave,
+    herramientaId: tarjeta.id,
+  }),
+);
 
 export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
   {
@@ -435,5 +455,21 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       "geometrica",
     ],
     tarjetas: tarjetasUnidadSegundoParcial,
+  },
+  {
+    id: "unidad-4",
+    titulo: "Unidad 4",
+    subtitulo: "Analisis predictivo de datos",
+    descripcion:
+      "Regresiones para analizar relaciones entre variables, obtener ecuaciones de ajuste y estimar nuevos valores con apoyo grafico.",
+    palabrasClave: [
+      "unidad 4",
+      "analisis predictivo de datos",
+      "regresion lineal",
+      "regresion cuadratica",
+      "regresion exponencial",
+      "regresion potencial",
+    ],
+    tarjetas: tarjetasUnidadRegresiones,
   },
 ];

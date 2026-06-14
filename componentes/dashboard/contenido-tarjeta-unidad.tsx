@@ -1,4 +1,5 @@
 import type { TarjetaUnidad } from "@/datos/dashboard";
+import { ModuloArbolProblemas } from "@/modulos/arbol-problemas/componentes/modulo-arbol-problemas";
 import { ModuloDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/componentes/modulo-distribucion-arbitraria";
 import { ModuloDiagramaBastones } from "@/modulos/diagrama-bastones/componentes/modulo-diagrama-bastones";
 import { ModuloDiagramaBarras } from "@/modulos/diagrama-barras/componentes/modulo-diagrama-barras";
@@ -143,6 +144,8 @@ export function ContenidoTarjetaUnidad({
           key={tarjeta.herramientaId}
           medidaId={tarjeta.herramientaId}
         />
+      ) : tarjeta.herramientaId === "arbol-problemas" ? (
+        <ModuloArbolProblemas key={tarjeta.id} />
       ) : tarjeta.herramientaId === "diagrama-columnas-simples" ? (
         <ModuloDiagramaColumnasSimples key={tarjeta.id} />
       ) : tarjeta.herramientaId === "distribucion-arbitraria" ? (

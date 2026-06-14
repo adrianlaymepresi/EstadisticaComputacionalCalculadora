@@ -4,6 +4,7 @@ import { tarjetasMedidasPosicion } from "@/modulos/medidas-posicion/servicios/co
 
 export type EstadoTarjeta = "disponible" | "proximamente";
 export type IdentificadorHerramienta =
+  | "arbol-problemas"
   | "formula-razon"
   | "formula-indice"
   | "formula-proporcion"
@@ -96,6 +97,42 @@ const tarjetasUnidadSegundoParcial: TarjetaUnidad[] =
   }));
 
 export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
+  {
+    id: "extras",
+    titulo: "EXTRAS",
+    subtitulo: "Herramientas complementarias",
+    descripcion:
+      "Espacio para herramientas visuales y practicas complementarias que ayudan a organizar ideas y trabajo academico.",
+    palabrasClave: [
+      "extras",
+      "arbol de problemas",
+      "herramientas complementarias",
+      "diagrama causal",
+      "organizacion",
+    ],
+    tarjetas: [
+      {
+        id: "arbol-problemas",
+        titulo: "ARBOL DE PROBLEMAS",
+        resumen:
+          "Construye un arbol interactivo con problema central, causas, efectos, derivados y exportacion a PNG.",
+        etiqueta: "Disponible ahora",
+        descripcionTrabajo:
+          "Abre una herramienta visual con panel de controles, lienzo interactivo, arrastre de nodos, zoom, orden automatico y exportacion.",
+        nota: "Mantiene la relacion logica entre causas y efectos sin romper el estilo actual del dashboard.",
+        estado: "disponible",
+        palabrasClave: [
+          "arbol de problemas",
+          "extras",
+          "causas",
+          "efectos",
+          "problema central",
+          "png",
+        ],
+        herramientaId: "arbol-problemas",
+      },
+    ],
+  },
   {
     id: "unidad-1-1",
     titulo: "Unidad 1.1",

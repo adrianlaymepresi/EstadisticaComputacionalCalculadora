@@ -1222,6 +1222,12 @@ export function ModuloRegresion({
             </div>
 
             <GraficaRegresionCanvas
+              key={`${resultado.id}-${resultado.ecuacionFinal}-${resultado.estimaciones
+                .map(
+                  (estimacion) =>
+                    `${estimacion.titulo}-${estimacion.entrada}-${estimacion.resultadoVisible}`,
+                )
+                .join("|")}`}
               resultado={resultado}
               configuracionGrafica={configuracionGrafica}
               estimaciones={resultado.estimaciones}

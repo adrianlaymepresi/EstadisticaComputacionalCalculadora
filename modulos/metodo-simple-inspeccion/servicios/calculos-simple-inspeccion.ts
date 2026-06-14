@@ -2,6 +2,7 @@ import type {
   FilaMetodoSimpleInspeccion,
   ResultadoMetodoSimpleInspeccion,
 } from "@/modulos/metodo-simple-inspeccion/tipos";
+import { contarDecimalesSignificativos } from "@/modulos/tablas-estadisticas/utilidades/precision-numerica";
 
 const MAXIMO_VALORES_DISTINTOS = 10;
 
@@ -67,8 +68,7 @@ function parsearNumero(texto: string): number | null {
 
 function contarDecimalesDesdeTexto(texto: string): number {
   const normalizado = normalizarNumero(texto);
-  const partes = normalizado.split(".");
-  return partes[1]?.length ?? 0;
+  return contarDecimalesSignificativos(normalizado);
 }
 
 function aRomano(valor: number): string {

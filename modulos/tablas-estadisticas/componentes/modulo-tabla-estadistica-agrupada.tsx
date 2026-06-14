@@ -4,6 +4,7 @@ import { useState } from "react";
 import { normalizarNombreArchivo } from "@/modulos/diagrama-burbujas/servicios/exportador";
 import { parsearDatosTabla } from "@/modulos/diagrama-burbujas/utilidades/validaciones";
 import { calcularDistribucionArbitraria } from "@/modulos/distribucion-arbitraria/servicios/calculos-distribucion-arbitraria";
+import { contarDecimalesSignificativos } from "@/modulos/tablas-estadisticas/utilidades/precision-numerica";
 import type {
   DireccionRedondeo,
   ResultadoDistribucionArbitraria,
@@ -133,8 +134,7 @@ function parsearNumero(texto: string): number | null {
 
 function contarDecimalesDesdeTexto(texto: string): number {
   const normalizado = normalizarNumero(texto);
-  const partes = normalizado.split(".");
-  return partes[1]?.length ?? 0;
+  return contarDecimalesSignificativos(normalizado);
 }
 
 function detectarPrecision(textos: string[]): number {

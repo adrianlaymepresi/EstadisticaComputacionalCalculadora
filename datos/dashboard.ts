@@ -1,6 +1,7 @@
 import { tarjetasFormulaTema1 } from "@/modulos/formulas-tema-1/servicios/configuraciones-formulas";
 import { tarjetasFormulaSegundoParcial } from "@/modulos/formulas-segundo-parcial/services/configuraciones-formulas-segundo-parcial";
 import { tarjetasMedidasPosicion } from "@/modulos/medidas-posicion/servicios/configuraciones-medidas-posicion";
+import { tarjetasProbabilidadUnidad2 } from "@/modulos/probabilidad-unidad-2/servicios/configuraciones-probabilidad-unidad-2";
 import { configuracionesRegresiones } from "@/modulos/regresiones/servicios/configuraciones-regresiones";
 
 export type EstadoTarjeta = "disponible" | "proximamente";
@@ -13,6 +14,10 @@ export type IdentificadorHerramienta =
   | "formula-porcentaje-cambio"
   | "formula-porcentaje-error"
   | "formula-tasa"
+  | "probabilidad-clasica"
+  | "probabilidad-eventos-compuestos"
+  | "probabilidad-condicional"
+  | "teorema-bayes"
   | "permutacion-lineal"
   | "permutacion-con-repeticion"
   | "permutacion-circular"
@@ -100,6 +105,21 @@ const tarjetasUnidadSegundoParcial: TarjetaUnidad[] =
     palabrasClave: tarjeta.palabrasClave,
     herramientaId: tarjeta.id,
   }));
+
+const tarjetasUnidadProbabilidad: TarjetaUnidad[] = tarjetasProbabilidadUnidad2.map(
+  (tarjeta) => ({
+    id: tarjeta.id,
+    titulo: tarjeta.titulo,
+    resumen: tarjeta.resumen,
+    etiqueta: "Disponible ahora",
+    descripcionTrabajo:
+      "Abre una herramienta especializada con formula, validaciones, captura guiada, procedimiento, interpretacion automatica y apoyo visual cuando corresponde.",
+    nota: "Incluye control de precision final y esta preparada para ejercicios de probabilidad clasica, compuesta, condicional y Bayes.",
+    estado: "disponible",
+    palabrasClave: tarjeta.palabrasClave,
+    herramientaId: tarjeta.id,
+  }),
+);
 
 const tarjetasUnidadRegresiones: TarjetaUnidad[] = configuracionesRegresiones.map(
   (tarjeta) => ({
@@ -437,6 +457,22 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
       "percentiles",
     ],
     tarjetas: tarjetasMedidasPosicion,
+  },
+  {
+    id: "unidad-2",
+    titulo: "Unidad 2",
+    subtitulo: "Probabilidades",
+    descripcion:
+      "Herramientas para resolver probabilidad clasica, eventos compuestos, probabilidad condicional y teorema de Bayes con procedimiento e interpretacion.",
+    palabrasClave: [
+      "unidad 2",
+      "probabilidades",
+      "probabilidad clasica",
+      "eventos compuestos",
+      "probabilidad condicional",
+      "bayes",
+    ],
+    tarjetas: tarjetasUnidadProbabilidad,
   },
   {
     id: "unidad-3",

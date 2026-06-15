@@ -985,10 +985,17 @@ export function calcularEventosCompuestosTres(
   };
 }
 
+interface ConsultaCuatroEventosResuelta {
+  descripcion: string;
+  valorBruto: number;
+  idsResaltados: readonly string[];
+  formula: string;
+}
+
 function construirConsultaCuatroEventos(
   entrada: EntradaCuatroEventos,
   regiones: RegionesCuatroEventos,
-) {
+): ConsultaCuatroEventosResuelta | undefined {
   const [a, b, c, d] = entrada.nombres;
   const pares = {
     "interseccion-ab": {
@@ -1254,6 +1261,11 @@ export function calcularEventosCompuestosCuatro(
     entrada.valorABCD,
   );
   const consulta = construirConsultaCuatroEventos(entrada, regiones);
+  if (!consulta) {
+    throw new Error(
+      "No se pudo resolver la consulta de cuatro eventos con los datos ingresados.",
+    );
+  }
   const probabilidad = convertirResultadoAProbabilidad(
     consulta.valorBruto,
     entrada.universo,

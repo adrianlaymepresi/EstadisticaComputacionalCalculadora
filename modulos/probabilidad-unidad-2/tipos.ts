@@ -7,6 +7,9 @@ export type IdentificadorProbabilidadUnidad2 =
   | "probabilidad-clasica"
   | "probabilidad-eventos-compuestos"
   | "probabilidad-condicional"
+  | "probabilidad-condicional-simple"
+  | "teorema-bayes-simple"
+  | "diagrama-arbol-probabilidad"
   | "teorema-bayes";
 
 export type ModoValorProbabilidad = "cantidades" | "decimal" | "porcentaje";

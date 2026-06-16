@@ -403,11 +403,11 @@ export function CardProbabilidadCondicional() {
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-3">
         <h1 className="text-[2.6rem] font-semibold tracking-tight text-acento-oscuro sm:text-[4rem]">
-          Probabilidad condicional
+          Probabilidad condicional + conjuntos
         </h1>
         <p className="max-w-5xl text-lg leading-8 text-texto-secundario sm:text-[1.15rem]">
-          Calcula la probabilidad de un evento sabiendo que otro ya ocurrio,
-          ya sea desde eventos con diagrama o desde una tabla de contingencia 2x2.
+          Calcula probabilidades condicionales desde eventos, conjuntos,
+          diagramas de Venn o tablas de contingencia 2x2 dentro de un flujo mas completo.
         </p>
       </header>
 

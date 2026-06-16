@@ -135,6 +135,9 @@ function esProbabilidadUnidad2(
     herramientaId === "probabilidad-clasica" ||
     herramientaId === "probabilidad-eventos-compuestos" ||
     herramientaId === "probabilidad-condicional" ||
+    herramientaId === "probabilidad-condicional-simple" ||
+    herramientaId === "teorema-bayes-simple" ||
+    herramientaId === "diagrama-arbol-probabilidad" ||
     herramientaId === "teorema-bayes"
   );
 }

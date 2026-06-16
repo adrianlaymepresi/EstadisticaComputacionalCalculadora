@@ -283,11 +283,11 @@ export function CardTeoremaBayes() {
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-3">
         <h1 className="text-[2.6rem] font-semibold tracking-tight text-acento-oscuro sm:text-[4rem]">
-          Teorema de Bayes
+          Diagrama de arbol + Bayes
         </h1>
         <p className="max-w-5xl text-lg leading-8 text-texto-secundario sm:text-[1.15rem]">
-          Calcula probabilidades posteriores con varias hipotesis, evidencia
-          observada y ramas complementarias para interpretar mejor el problema.
+          Calcula Bayes con varias hipotesis, evidencia, complemento y apoyo
+          visual tipo arbol para interpretar mejor las ramas del problema.
         </p>
       </header>
 

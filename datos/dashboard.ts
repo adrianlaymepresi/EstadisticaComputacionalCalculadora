@@ -17,6 +17,9 @@ export type IdentificadorHerramienta =
   | "probabilidad-clasica"
   | "probabilidad-eventos-compuestos"
   | "probabilidad-condicional"
+  | "probabilidad-condicional-simple"
+  | "teorema-bayes-simple"
+  | "diagrama-arbol-probabilidad"
   | "teorema-bayes"
   | "permutacion-lineal"
   | "permutacion-con-repeticion"
@@ -114,7 +117,7 @@ const tarjetasUnidadProbabilidad: TarjetaUnidad[] = tarjetasProbabilidadUnidad2.
     etiqueta: "Disponible ahora",
     descripcionTrabajo:
       "Abre una herramienta especializada con formula, validaciones, captura guiada, procedimiento, interpretacion automatica y apoyo visual cuando corresponde.",
-    nota: "Incluye control de precision final y esta preparada para ejercicios de probabilidad clasica, compuesta, condicional y Bayes.",
+    nota: "Incluye versiones simples y avanzadas para condicional, Bayes y diagramas de arbol, manteniendo precision configurable al final.",
     estado: "disponible",
     palabrasClave: tarjeta.palabrasClave,
     herramientaId: tarjeta.id,
@@ -463,13 +466,14 @@ export const unidadesTematicas: ReadonlyArray<UnidadTematica> = [
     titulo: "Unidad 2",
     subtitulo: "Probabilidades",
     descripcion:
-      "Herramientas para resolver probabilidad clasica, eventos compuestos, probabilidad condicional y teorema de Bayes con procedimiento e interpretacion.",
+      "Herramientas para resolver probabilidad clasica, eventos compuestos, probabilidad condicional simple y avanzada, teorema de Bayes y diagramas de arbol.",
     palabrasClave: [
       "unidad 2",
       "probabilidades",
       "probabilidad clasica",
       "eventos compuestos",
       "probabilidad condicional",
+      "diagrama de arbol",
       "bayes",
     ],
     tarjetas: tarjetasUnidadProbabilidad,
